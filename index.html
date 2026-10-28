@@ -2433,8 +2433,7 @@ const F = {
   start: { k: 'start', l: 'Ngày bắt đầu dự kiến', t: 'date' },
   due: { k: 'due', l: 'Deadline', t: 'date' },
   est: { k: 'estimatedMin', l: 'Thời lượng dự kiến (phút)', t: 'number', min: 0, step: 5 },
-  productLink: { k: 'productLink', l: 'Link sản phẩm (nếu có)', t: 'url', full: true },
-  sourceLink: { k: 'sourceLink', l: 'Link nguồn / footage sau khi quay (tùy chọn)', t: 'url', full: true },
+  productLink: { k: 'productLink', l: 'Link sản phẩm', t: 'url', full: true },
 };
 
 const schemas = {
@@ -2459,9 +2458,9 @@ const schemas = {
         fields: [
           F.desc,
           { k: 'output', l: 'Kết quả đầu ra', t: 'textarea', full: true },
-          { k: 'docLink', l: 'Link kịch bản / tài liệu', t: 'url', full: true },
+          { k: 'isOutput', l: 'Tính là 1 sản phẩm khi hoàn thành', t: 'checkbox', full: true,
+            hint: 'Chỉ tích ở bước tạo ra sản phẩm cuối (ví dụ “Đăng video”). Mục tiêu số lượng của công việc lớn đếm các việc được tích ở đây.' },
           F.productLink,
-          F.sourceLink,
           { k: 'tags', l: 'Nhãn / từ khóa (cách nhau dấu phẩy)', t: 'tags', full: true },
           { k: 'notes', l: 'Ghi chú', t: 'textarea', full: true },
           { k: 'delayReason', l: 'Lý do trì hoãn (nếu có)', t: 'text', full: true },
@@ -2500,14 +2499,15 @@ const schemas = {
           { k: 'priority', l: 'Mức ưu tiên', t: 'select', opts: PRIORITIES },
           { k: 'month', l: 'Kế hoạch tháng', t: 'month' },
           { k: 'due', l: 'Hạn hoàn thành', t: 'date' },
+          { k: 'target', l: 'Số lượng sản phẩm cần đạt', t: 'number', min: 0, step: 1,
+            hint: 'Ví dụ 30 video. Đủ 30 việc được tích “Tính là 1 sản phẩm” là đạt mục tiêu.' },
         ],
       },
       {
         title: 'Mô tả và liên kết',
         fields: [
           { k: 'description', l: 'Mô tả / mục tiêu', t: 'textarea', full: true },
-          { k: 'docLink', l: 'Link brief / tài liệu', t: 'url', full: true },
-          { k: 'productLink', l: 'Link sản phẩm chính (nếu có)', t: 'url', full: true },
+          { k: 'productLink', l: 'Link sản phẩm', t: 'url', full: true },
           { k: 'notes', l: 'Ghi chú', t: 'textarea', full: true },
         ],
       },
@@ -2711,14 +2711,14 @@ function blank(entity) {
   if (entity === 'task') {
     return { ...base, title: '', description: '', groupId: 'content', priority: 'medium', status: 'todo',
       projectId: '', project: '', start: '', due: '', estimatedMin: 30, doneAt: '', output: '', docLink: '',
-      productLink: '', sourceLink: '', notes: '',
+      productLink: '', sourceLink: '', notes: '', isOutput: false,
       tags: [], checklist: [], recurrence: null, source: 'plan', requestedBy: '', receivedAt: '',
       affects: '', contentId: '', eventId: '', delayReason: '', sample: false };
   }
   if (entity === 'project') {
     return { ...base, title: '', description: '', groupId: 'content', priority: 'medium',
       month: new Date().toISOString().slice(0, 7), start: '', due: '', status: 'todo', doneAt: '',
-      docLink: '', productLink: '', notes: '', sample: false };
+      target: 0, docLink: '', productLink: '', notes: '', sample: false };
   }
   if (entity === 'content') {
     return { ...base, title: '', code: '', brand: '', product: '', platform: 'TikTok', format: 'Video ngắn',
@@ -3293,6 +3293,16 @@ function sectionHtml(section, index, rec) {
 
 function fieldHtml(f, rec) {
   const id = `f-${f.k}`;
+  if (f.t === 'checkbox') {
+    return `<div class="field full" data-field="${f.k}">
+      <label class="cl-item" style="align-items:center;cursor:pointer">
+        <input id="${id}" name="${f.k}" type="checkbox"${rec[f.k] ? ' checked' : ''}>
+        <span>${esc(f.l)}</span>
+      </label>
+      ${f.hint ? `<span class="hint">${esc(f.hint)}</span>` : ''}
+      <span class="err" hidden></span>
+    </div>`;
+  }
   return `<div class="field${f.full ? ' full' : ''}" data-field="${f.k}">
     ${f.l ? `<label for="${id}">${esc(f.l)}</label>` : ''}
     ${control(f, rec)}
@@ -3321,6 +3331,8 @@ function collect(body, rec) {
     if (k.startsWith('rec-') || !k) continue;
     if (el.dataset.tags !== undefined) {
       out[k] = el.value.split(',').map(s => s.trim()).filter(Boolean);
+    } else if (el.type === 'checkbox') {
+      out[k] = el.checked;
     } else if (el.type === 'number') {
       out[k] = el.value === '' ? 0 : Number(el.value);
     } else {
@@ -4916,13 +4928,31 @@ function childrenOf(projectId) {
   return all('tasks').filter(t => t.projectId === projectId && t.status !== 'cancelled');
 }
 
+function targetOf(project) {
+  return Math.max(0, Math.floor(Number(project?.target) || 0));
+}
+
+// Việc được tích "tính là 1 sản phẩm". Nếu chưa tích việc nào thì tạm đếm mọi việc đã xong
+// để dữ liệu cũ vẫn chạy như trước.
+function countsOutput(task) {
+  return !!task.isOutput;
+}
+
 function progressOf(projectId) {
+  const project = find('projects', projectId);
   const items = childrenOf(projectId);
   const done = items.filter(t => t.status === 'done').length;
   const minutes = items.reduce((sum, t) => sum + (Number(t.estimatedMin) || 0), 0);
+  const target = targetOf(project);
+  const marked = items.filter(countsOutput);
+  const outputs = marked.filter(t => t.status === 'done').length;
   return {
-    items, done, total: items.length, minutes,
-    pct: items.length ? Math.round((done / items.length) * 100) : 0,
+    items, done, total: items.length, minutes, target, outputs,
+    marked: marked.length, hasMarks: marked.length > 0,
+    reached: target ? outputs >= target : items.length > 0 && done === items.length,
+    pct: target
+      ? Math.min(100, Math.round((outputs / target) * 100))
+      : (items.length ? Math.round((done / items.length) * 100) : 0),
   };
 }
 
@@ -4931,6 +4961,12 @@ function derivedStatus(project) {
   if (project.status === 'cancelled') return 'cancelled';
   const items = childrenOf(project.id);
   if (!items.length) return project.status || 'todo';
+  const target = targetOf(project);
+  const done = items.filter(t => t.status === 'done').length;
+  if (target) {
+    const outputs = items.filter(t => countsOutput(t) && t.status === 'done').length;
+    return outputs >= target ? 'done' : (items.some(t => t.status !== 'todo') ? 'doing' : 'todo');
+  }
   if (items.every(t => t.status === 'done')) return 'done';
   if (items.some(t => t.status !== 'todo')) return 'doing';
   return 'todo';
@@ -5124,6 +5160,7 @@ function filtersHtml(projects) {
 function rowHtml(t) {
   const p = taskProgress(t);
   const actual = sessionMinutes(all('sessions'), t.id);
+  const product = safeUrl(t.productLink);
   return `<tr class="clickable" data-id="${esc(t.id)}">
     <td><input type="checkbox" data-done aria-label="Hoàn thành"${t.status === 'done' ? ' checked disabled' : ''}></td>
     <td>
@@ -5132,8 +5169,10 @@ function rowHtml(t) {
         ${t.projectId ? `<span class="tag">${esc(projectTitle(t))}</span>` : ''}
         ${(t.tags || []).map(x => `<span class="tag">${esc(x)}</span>`).join('')}
         ${p.total ? `<span class="tag">${p.done}/${p.total}</span>` : ''}
+        ${t.isOutput ? '<span class="tag">tính sản phẩm</span>' : ''}
         ${t.recurrence ? '<span class="tag">định kỳ</span>' : ''}
         ${t.source === 'support' ? '<span class="tag">hỗ trợ</span>' : ''}
+        ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
         ${isTaskRunning(t) ? '<span class="pill blue">đang tính giờ</span>' : ''}
       </div>
     </td>
@@ -5308,7 +5347,7 @@ function monthSummary() {
     <span><b>${doneProjects}</b> đã hoàn thành</span>
     <span><b>${done}/${total}</b> việc nhỏ xong</span>
     <span>Dự kiến <b>${esc(fmtDur(planMin))}</b></span>
-    <span class="muted">Xong hết việc nhỏ → đầu mục tự 100% và Hoàn thành.</span>
+    <span class="muted">Mục tiêu đếm các việc được tích “Tính là 1 sản phẩm”, không đếm mọi bước nhỏ.</span>
   </div>`;
 }
 
@@ -5316,8 +5355,6 @@ function childRow(t, showProject = false) {
   const actual = sessionMinutes(all('sessions'), t.id);
   const steps = taskProgress(t);
   const due = String(t.due || '').slice(0, 10);
-  const doc = safeUrl(t.docLink);
-  const source = safeUrl(t.sourceLink);
   const product = safeUrl(t.productLink);
   return `<div class="pc-child${t.status === 'done' ? ' is-done' : ''}" data-id="${esc(t.id)}">
     <input type="checkbox" data-child-done aria-label="Hoàn thành việc nhỏ"${t.status === 'done' ? ' checked' : ''}>
@@ -5332,9 +5369,8 @@ function childRow(t, showProject = false) {
         <span class="tag">dự kiến ${esc(fmtDur(t.estimatedMin))}</span>
         <span class="tag">thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
         ${steps.total ? `<span class="tag">${steps.done}/${steps.total} bước</span>` : ''}
-        ${doc ? `<a class="tag tag-link" href="${esc(doc)}" target="_blank" rel="noopener">Kịch bản</a>` : ''}
-        ${source ? `<a class="tag tag-link" href="${esc(source)}" target="_blank" rel="noopener">Nguồn / footage</a>` : ''}
-        ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Sản phẩm</a>` : ''}
+        ${t.isOutput ? '<span class="tag">tính sản phẩm</span>' : ''}
+        ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
         ${isTaskRunning(t) ? '<span class="pill blue">đang tính giờ</span>' : ''}
       </div>
     </div>
@@ -5350,10 +5386,9 @@ function projectCard(p) {
   const items = projectTasks(p);
   const actual = items.reduce((sum, t) => sum + sessionMinutes(all('sessions'), t.id), 0);
   const liveStatus = projectsApi.derivedStatus(p);
-  const pct = prog.total ? prog.pct : (liveStatus === 'done' ? 100 : 0);
+  const pct = (prog.total || prog.target) ? prog.pct : (liveStatus === 'done' ? 100 : 0);
   const overdue = items.filter(t => isOverdue(t)).length;
   const todayCount = items.filter(t => String(t.due || '').slice(0, 10) === today() && t.status !== 'done').length;
-  const doc = safeUrl(p.docLink);
   const product = safeUrl(p.productLink);
   return `<section class="card project-card${liveStatus === 'done' ? ' is-done' : ''}" data-project="${esc(p.id)}">
     <div class="pc-head">
@@ -5365,17 +5400,21 @@ function projectCard(p) {
           ${priorityPill(p.priority)}
           <span class="tag">${esc(groupName(p.groupId))}</span>
           ${p.due ? `<span class="tag">Hạn ${esc(fmtDate(p.due))}</span>` : ''}
+          ${prog.target ? `<span class="tag">Mục tiêu ${prog.target} sản phẩm</span>` : ''}
+          ${prog.target && prog.reached ? '<span class="pill green">Đã đạt</span>' : ''}
+          ${prog.target && prog.total && !prog.hasMarks ? '<span class="pill amber">Chưa đánh dấu bước tính sản phẩm</span>' : ''}
           ${overdue ? `<span class="pill red">${overdue} quá hạn</span>` : ''}
           ${todayCount ? `<span class="pill blue">${todayCount} hôm nay</span>` : ''}
-          ${doc ? `<a class="tag tag-link" href="${esc(doc)}" target="_blank" rel="noopener">Brief</a>` : ''}
-          ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Sản phẩm</a>` : ''}
+          ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
         </div>
       </div>
       <div class="pc-progress">
         <strong>${pct}%</strong>
-        <span class="small muted">${prog.done}/${prog.total} việc nhỏ</span>
+        <span class="small muted">${prog.target
+          ? `${prog.outputs}/${prog.target} sản phẩm`
+          : `${prog.done}/${prog.total} việc nhỏ`}</span>
         <div class="bar"><span style="width:${pct}%"></span></div>
-        <span class="small muted">Dự kiến ${esc(fmtDur(prog.minutes))} · Thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
+        <span class="small muted">${prog.target ? `${prog.done}/${prog.total} việc nhỏ · ` : ''}Dự kiến ${esc(fmtDur(prog.minutes))} · Thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
       </div>
       <div class="pc-actions">
         <button type="button" class="btn sm" data-add-child="${esc(p.id)}">+ Việc nhỏ</button>
@@ -5386,13 +5425,16 @@ function projectCard(p) {
     <div class="pc-children">
       ${items.length
         ? items.map(t => childRow(t)).join('')
-        : `<p class="pc-empty small muted">Chưa có việc nhỏ. Thêm từng bước như “Viết kịch bản”, “Quay footage”, “Edit video”…</p>`}
+        : '<p class="pc-empty small muted">Chưa có việc nhỏ. Thêm việc nhỏ bên dưới.</p>'}
     </div>
     <div class="pc-foot">
       <button type="button" class="btn sm ghost" data-add-child="${esc(p.id)}">+ Thêm việc nhỏ</button>
-      ${prog.total ? '' : `<button type="button" class="btn sm" data-video-template="${esc(p.id)}">+ Mẫu video TikTok</button>`}
       <span class="spacer"></span>
-      <span class="small muted">${prog.total ? 'Mở việc nhỏ để gắn link kịch bản, nguồn quay và link sản phẩm.' : ''}</span>
+      <span class="small muted">${prog.total
+        ? (prog.target
+          ? 'Tích “Tính là 1 sản phẩm” ở bước đăng / giao sản phẩm để cộng vào mục tiêu.'
+          : 'Mở việc nhỏ để gắn link sản phẩm.')
+        : ''}</span>
     </div>
   </section>`;
 }
@@ -5437,7 +5479,7 @@ function monthPlanHtml() {
     return `${planToolbar()}
       <div class="card"><div class="card-body">
         ${emptyState('Tháng này chưa có công việc lớn',
-          'Tạo đầu mục cho tháng — ví dụ “Sản xuất video TikTok” — rồi thêm các việc nhỏ: viết kịch bản, quay, dựng, đăng bài.',
+          'Tạo đầu mục cho tháng, đặt số lượng sản phẩm cần đạt, rồi thêm các việc nhỏ bên trong.',
           '<button class="btn primary" data-new-project>+ Công việc lớn</button>')}
         ${jump}
       </div></div>
@@ -5534,25 +5576,6 @@ async function removeProject(p) {
   toast('Đã xoá công việc lớn.', 'success');
 }
 
-async function addVideoTemplate(p) {
-  const steps = [
-    ['Viết kịch bản', 'content', 60, 0],
-    ['Quay footage', 'shoot', 90, 1],
-    ['Edit video', 'shoot', 120, 2],
-    ['Đăng bài & gắn link sản phẩm', 'distribute', 30, 3],
-  ];
-  const start = p.start || today();
-  for (const [title, groupId, estimatedMin, offset] of steps) {
-    await save('tasks', {
-      ...blank('task'), title, projectId: p.id, groupId,
-      priority: p.priority || 'medium', status: 'todo',
-      due: addDays(start, offset), estimatedMin,
-      productLink: p.productLink || '',
-    });
-  }
-  toast('Đã thêm 4 việc nhỏ theo quy trình video.', 'success');
-}
-
 function bind(view) {
   view.addEventListener('click', async e => {
     const tab = e.target.closest('[data-tab]');
@@ -5618,15 +5641,6 @@ function bind(view) {
           priority: p.priority, productLink: p.productLink || '',
         });
       }
-      return;
-    }
-    const tpl = e.target.closest('[data-video-template]');
-    if (tpl) {
-      if (tpl.dataset.busy) return;
-      tpl.dataset.busy = '1';
-      tpl.disabled = true;
-      const p = find('projects', tpl.dataset.videoTemplate);
-      if (p) await addVideoTemplate(p);
       return;
     }
     const addDay = e.target.closest('[data-add-day]');
@@ -6318,7 +6332,10 @@ function weekHtml() {
 function dayHtml() {
   const items = agendaItems(state.date, state.date, inLayers());
   const overdue = all('tasks').filter(t => isOverdue(t));
-  return `${overdue.length ? `<div class="notice bad">${overdue.length} công việc quá hạn chưa giải quyết. <a href="#/tasks?tab=overdue">Xem danh sách</a></div>` : ''}
+  return `<div class="row" style="margin-bottom:10px">
+      <button type="button" class="btn sm" data-back-month>← Về lịch tháng</button>
+    </div>
+    ${overdue.length ? `<div class="notice bad">${overdue.length} công việc quá hạn chưa giải quyết. <a href="#/tasks?tab=overdue">Xem danh sách</a></div>` : ''}
     <div class="card"><div class="card-head"><h2>${esc(dayLabel(state.date))}</h2></div>
     <div class="card-body cal-day-list">
       ${items.length ? items.map(i => `<div class="cal-row">
@@ -6416,6 +6433,7 @@ function bind(view) {
   view.addEventListener('click', e => {
     const nav = e.target.closest('[data-nav]');
     if (nav) { shift(Number(nav.dataset.nav)); shell(view); return; }
+    if (e.target.closest('[data-back-month]')) { state.view = 'month'; shell(view); return; }
     if (e.target.closest('[data-today]')) { state.date = today(); shell(view); return; }
     if (e.target.closest('[data-bp]')) { chooseBackwardPlan(); return; }
     if (e.target.closest('[data-new]')) {
@@ -7107,7 +7125,7 @@ function render(view, params = {}) {
         <button class="btn" data-csv="time">Phiên thời gian (CSV)</button>
         <button class="btn" data-csv="metrics">Số liệu hiệu quả (CSV)</button>
       </div>
-      <p class="small muted" style="margin:8px 0 0">File CSV dùng UTF-8 kèm BOM để Excel hiển thị đúng tiếng Việt. Xuất bản sao lưu đầy đủ ở trang Cài đặt.</p>
+      <p class="small muted" style="margin:8px 0 0">File CSV dùng UTF-8 kèm BOM để Excel hiển thị đúng tiếng Việt.</p>
     </div></div>
   `;
 
@@ -7233,12 +7251,11 @@ return { exportTodaySummary, wipeAll };
 // ---- js/views/settings.js ----
 __M["js/views/settings.js"] = (() => {
 // Phân hệ Cài đặt: gọn theo nhóm, đồng bộ mật khẩu và dữ liệu.
-const { all, settings, saveSettings, backupPayload, importPayload } = __M["js/store.js"];
-const { esc, fmtDate, download, slugTime } = __M["js/util.js"];
+const { all, settings, saveSettings } = __M["js/store.js"];
+const { esc, fmtDate } = __M["js/util.js"];
 const { DEFAULT_SETTINGS } = __M["js/schema.js"];
 const { openModal, toast, confirmDialog } = __M["js/ui.js"];
 const { wipeAll } = __M["js/backup.js"];
-const { validateBackup } = __M["js/logic.js"];
 const { permission, requestPermission } = __M["js/notify.js"];
 const { cloudState, cloudStatusText, cloudLabel, subscribeCloud } = __M["js/cloud.js"];
 
@@ -7475,14 +7492,6 @@ function render(view) {
             ${isAdmin ? '<button type="button" class="btn sm danger" data-wipe>Xoá toàn bộ…</button>' : ''}
           </div>
         </div>
-        <div class="card-body" style="border-top:1px solid var(--line)">
-          <p class="small muted" style="margin:0 0 10px">Sao lưu toàn bộ công việc, công việc lớn, nội dung, lịch, số liệu và cài đặt ra tệp JSON để giữ bản dự phòng hoặc chuyển sang máy khác.</p>
-          <div class="row">
-            <button type="button" class="btn sm" data-export-backup>Xuất bản sao lưu</button>
-            ${isAdmin ? '<button type="button" class="btn sm" data-import-backup>Nhập từ tệp…</button>' : ''}
-          </div>
-          ${isAdmin ? '<input type="file" id="import-backup" accept="application/json,.json" hidden>' : ''}
-        </div>
       </section>
     </div>
 
@@ -7632,49 +7641,6 @@ function render(view) {
 
   view.querySelector('[data-integrity]').addEventListener('click', openIntegrity);
   view.querySelector('[data-wipe]')?.addEventListener('click', () => wipeAll());
-
-  view.querySelector('[data-export-backup]')?.addEventListener('click', () => {
-    try {
-      download(`content-workspace-${slugTime()}.json`, JSON.stringify(backupPayload(), null, 2));
-      toast('Đã xuất bản sao lưu JSON.', 'success');
-    } catch (e) {
-      toast('Không xuất được bản sao lưu: ' + e.message, 'error');
-    }
-  });
-
-  const importFile = view.querySelector('#import-backup');
-  view.querySelector('[data-import-backup]')?.addEventListener('click', () => importFile?.click());
-  importFile?.addEventListener('change', async () => {
-    const file = importFile.files?.[0];
-    importFile.value = '';
-    if (!file) return;
-    let obj;
-    try {
-      obj = JSON.parse(await file.text());
-    } catch {
-      toast('Tệp không phải JSON hợp lệ.', 'error');
-      return;
-    }
-    const res = validateBackup(obj);
-    if (!res.ok) {
-      toast('Tệp sao lưu không hợp lệ: ' + (res.errors[0] || 'không rõ lỗi'), 'error');
-      return;
-    }
-    const c = res.counts || {};
-    const ok = await confirmDialog({
-      title: 'Nhập dữ liệu từ tệp',
-      message: 'Thay thế toàn bộ dữ liệu hiện tại bằng nội dung tệp sao lưu?',
-      details: `${c.tasks || 0} công việc, ${c.projects || 0} công việc lớn, ${c.contents || 0} nội dung, ${c.events || 0} sự kiện. Dữ liệu trên máy này sẽ bị thay thế; nếu đang bật Firebase, máy khác cũng sẽ nhận bản này.`,
-      okLabel: 'Nhập và thay thế', danger: true,
-    });
-    if (!ok) return;
-    try {
-      await importPayload(obj.data && typeof obj.data === 'object' ? obj.data : obj, 'replace');
-      toast('Đã nhập dữ liệu từ tệp sao lưu.', 'success');
-    } catch (e) {
-      toast('Không nhập được dữ liệu: ' + e.message, 'error');
-    }
-  });
 
   // Lấy mật khẩu mới nhất từ Firebase để kiểm tra mật khẩu cũ chính xác.
   window.__cwAuth?.refresh?.().catch(() => {});
