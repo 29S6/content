@@ -311,63 +311,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
 
 .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
 
-.timer-widget {
-  padding: 12px;
-  border: 1px solid rgba(129, 140, 248, .24);
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(99, 102, 241, .2), rgba(124, 58, 237, .07));
-}
-.timer-widget .small.muted { color: var(--sb-muted); }
-.timer-widget .small { color: #c7d2fe; line-height: 1.45; }
-.timer-time {
-  margin: 2px 0 3px;
-  color: #fff;
-  font-size: 25px;
-  font-weight: 700;
-  letter-spacing: .025em;
-  font-variant-numeric: tabular-nums;
-}
-.timer-widget .btn {
-  background: rgba(255, 255, 255, .09);
-  border-color: rgba(255, 255, 255, .14);
-  color: #fff;
-  box-shadow: none;
-}
-.timer-widget .btn:hover { background: rgba(255, 255, 255, .16); }
-.timer-widget .btn.primary { background: var(--grad); border-color: transparent; }
-.timer-idle {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 12px;
-  border: 1px dashed rgba(148, 163, 184, .24);
-  border-radius: 12px;
-  color: var(--sb-muted);
-  font-size: 11.5px;
-}
-.timer-idle::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  flex: 0 0 8px;
-  border-radius: 50%;
-  background: #64748b;
-  box-shadow: 0 0 0 4px rgba(100, 116, 139, .14);
-}
-.timer-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.timer-live::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #34d399;
-  animation: pulse 1.6s ease-in-out infinite;
-}
-
 .sync-note {
   display: flex;
   gap: 9px;
@@ -591,6 +534,13 @@ html[data-theme="dark"] .viewer-banner {
   box-shadow: 0 8px 20px -10px rgba(220, 38, 38, .8);
 }
 .btn.danger:hover { filter: brightness(1.05); }
+.btn.soft-danger {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 28%, var(--line));
+  background: var(--bad-soft);
+  box-shadow: none;
+}
+.btn.soft-danger:hover { border-color: var(--bad); filter: brightness(.98); }
 .btn.ghost {
   background: transparent;
   border-color: transparent;
@@ -1572,7 +1522,7 @@ details.section > .section-body {
   #btn-quick svg { width: 24px; height: 24px; }
   /* Cài đặt không có thao tác thêm nhanh: ẩn nút nổi để không che nút Đổi mật khẩu. */
   body[data-route="settings"] #btn-quick { display: none; }
-  /* Kế hoạch đã có nút thêm riêng: ẩn nút nổi để không che việc nhỏ. */
+  /* Kế hoạch đã có nút thêm riêng: ẩn nút nổi để không che danh sách việc. */
   body:has(.plan-bar) #btn-quick { display: none; }
   #view { padding: 16px 14px calc(112px + env(safe-area-inset-bottom)); }
   .bottom-nav { display: flex; }
@@ -1761,7 +1711,7 @@ body.role-viewer #btn-quick { display: none; }
 
 /* ---------- task hierarchy ---------- */
 .hier-intro { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
-.task-groups { display: flex; flex-direction: column; gap: 14px; }
+.task-groups { display: flex; flex-direction: column; gap: 18px; }
 .task-group { overflow: hidden; }
 .tg-head { display: flex; align-items: flex-start; gap: 18px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .tg-title { flex: 1; min-width: 0; }
@@ -1800,43 +1750,109 @@ body.role-viewer #btn-quick { display: none; }
 }
 .plan-summary b { color: var(--text); font-weight: 650; }
 .plan-summary .muted { margin-left: auto; font-size: 11.5px; }
-.project-card { overflow: hidden; }
-.pc-head { display: flex; align-items: flex-start; gap: 16px; padding: 15px 18px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.project-card { overflow: hidden; border-left: 4px solid var(--pc-color, var(--accent)); }
+.pc-head {
+  display: flex; align-items: flex-start; gap: 18px; padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--pc-color, var(--accent)) 8%, var(--surface-2)), var(--surface-2) 65%);
+}
 .pc-title { flex: 1; min-width: 0; }
+.pc-dot {
+  display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%;
+  background: var(--pc-color, var(--accent)); vertical-align: 1px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pc-color, var(--accent)) 16%, transparent);
+}
 .pc-name {
   display: inline-block; margin: 2px 0 7px; padding: 0; border: 0; background: none;
   color: var(--text); font: inherit; font-size: 16px; font-weight: 650; text-align: left; cursor: pointer;
 }
 .pc-name:hover { color: var(--accent); }
 .project-card.is-done .pc-name { color: var(--muted); }
-.pc-progress { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 220px; flex: 0 0 220px; }
+.pc-progress { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; width: 220px; flex: 0 0 220px; }
 .pc-progress strong { font-size: 21px; letter-spacing: -.03em; }
 .pc-progress .bar { width: 100%; }
-.pc-actions { display: flex; align-items: center; gap: 4px; }
-.pc-children { display: flex; flex-direction: column; }
-.pc-child { display: flex; align-items: flex-start; gap: 10px; padding: 11px 18px; border-top: 1px solid var(--line); }
-.pc-child:first-child { border-top: 0; }
-.pc-child:hover { background: var(--surface-2); }
-.pc-child > input { margin-top: 4px; flex: 0 0 auto; }
+.pc-progress .bar > span { background: var(--pc-color, var(--accent)); }
+.pc-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.pc-children { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 14px; }
+.pc-child {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border: 1px solid var(--line); border-left: 3px solid var(--pc-color, var(--accent));
+  border-radius: 10px; background: var(--surface);
+}
+.pc-child:hover {
+  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--pc-color, var(--accent)) 28%, var(--line));
+}
+.pc-child.is-done { background: color-mix(in srgb, var(--pc-color, var(--accent)) 4%, var(--surface)); }
+.pc-child.is-cancelled { opacity: .62; background: var(--surface-2); }
+.pc-child.is-cancelled .pc-child-title { text-decoration: line-through; color: var(--muted); }
 .pc-child-main { flex: 1; min-width: 0; }
 .pc-child-title { padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
 .pc-child-title:hover { color: var(--accent); }
 .pc-child.is-done .pc-child-title { color: var(--muted); text-decoration: line-through; }
-.pc-child-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 4px; }
-.pc-child-actions { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.pc-child-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.pc-child-actions {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  gap: 8px; flex: 0 0 190px; margin-left: auto;
+}
+.pc-child-actions .btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 32px; padding: 0 13px; white-space: nowrap;
+}
+.status-quick {
+  width: 100%; max-width: 100%; min-width: 0;
+  height: 32px; padding: 0 28px 0 9px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--text-2);
+  font-size: 11.5px; font-weight: 650; cursor: pointer;
+}
+.status-quick:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 1px; }
+.status-quick.st-doing { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: var(--accent-soft); }
+.status-quick.st-done { color: #15803d; border-color: color-mix(in srgb, #16a34a 30%, var(--line)); background: color-mix(in srgb, #16a34a 9%, var(--surface)); }
+.status-quick.st-waiting, .status-quick.st-onhold { color: #b45309; border-color: color-mix(in srgb, #d97706 30%, var(--line)); background: color-mix(in srgb, #d97706 9%, var(--surface)); }
+.status-quick.st-cancelled { color: var(--muted); background: var(--surface-2); text-decoration: line-through; }
 .pc-empty { margin: 0; padding: 14px 18px; }
-.pc-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 9px 18px 12px; border-top: 1px dashed var(--line); }
+.pc-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 18px 13px; border-top: 1px dashed var(--line); }
 .tag-link { text-decoration: none; }
 .tag-link:hover { color: var(--accent); border-color: var(--accent); }
 .tag-red { color: var(--bad); border-color: rgba(217, 45, 32, .35); background: var(--bad-soft); }
+.tag-out { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.tag-today { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); background: var(--accent-soft); }
+.pc-goal { margin: -2px 0 8px; max-width: 76ch; }
+.prod-board { display: flex; flex-direction: column; gap: 14px; }
+.prod-sec { overflow: hidden; border-left: 4px solid var(--line); }
+.prod-sec[data-tone="red"] { border-left-color: var(--bad); }
+.prod-sec[data-tone="today"] { border-left-color: var(--accent); }
+.prod-sec[data-tone="week"] { border-left-color: #d97706; }
+.prod-sec[data-tone="later"] { border-left-color: #0284c7; }
+.prod-sec[data-tone="todo"] { border-left-color: #64748b; }
+.prod-sec[data-tone="done"] { border-left-color: #16a34a; }
+.prod-sec[data-tone="cancelled"] { border-left-color: #94a3b8; }
+.prod-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+}
+.prod-head h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .01em; }
+.prod-head .spacer { flex: 1; }
+.prod-mark { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: var(--line-strong); }
+.prod-sec[data-tone="red"] .prod-head { background: var(--bad-soft); }
+.prod-sec[data-tone="red"] .prod-mark { background: var(--bad); }
+.prod-sec[data-tone="today"] .prod-head { background: var(--accent-soft); }
+.prod-sec[data-tone="today"] .prod-mark { background: var(--accent); }
+.prod-sec[data-tone="week"] .prod-mark { background: #d97706; }
+.prod-sec[data-tone="later"] .prod-mark { background: #0284c7; }
+.prod-sec[data-tone="done"] .prod-mark { background: #16a34a; }
+.prod-sec[data-tone="cancelled"] .prod-mark { background: #94a3b8; }
+.prod-sec .pc-children { gap: 8px; padding: 10px 12px 12px; }
+.prod-sec .pc-child { padding: 11px 13px; }
 .day-plan { display: flex; flex-direction: column; gap: 10px; }
 .day-card { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
 .day-card.is-today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .day-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .day-head strong { font-size: 13px; }
 .day-head .spacer { flex: 1; }
-.day-body { display: flex; flex-direction: column; }
-.day-body .pc-child { padding: 10px 14px; }
+.day-body { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; }
+.day-body .pc-child { padding: 11px 12px; }
 .day-empty { margin: 0; padding: 11px 14px; }
 .up-card { margin-top: 14px; overflow: hidden; }
 .up-card .card-head { gap: 8px; }
@@ -1867,15 +1883,23 @@ body.role-viewer #btn-quick { display: none; }
   .plan-nav strong { flex: 1; min-width: 0; }
   .plan-bar > .btn.primary { flex: 1 1 100%; }
   .plan-summary .muted { margin-left: 0; }
-  .pc-head { flex-direction: column; gap: 10px; padding: 13px 14px; }
+  .pc-head { flex-direction: column; gap: 12px; padding: 13px 14px; }
   .pc-progress { width: 100%; flex: none; align-items: stretch; }
-  .pc-actions { width: 100%; }
+  .pc-actions { width: 100%; justify-content: flex-start; }
   .pc-actions .btn { flex: 1; }
-  .pc-child { padding: 10px 14px; }
-  .pc-child-actions .btn { padding-left: 6px; padding-right: 6px; }
+  .pc-children { padding: 10px 10px 12px; gap: 8px; }
+  .pc-child { flex-wrap: wrap; padding: 11px 12px; }
+  .pc-child-main { flex: 1 1 100%; }
+  .pc-child-actions { width: 100%; margin-left: 0; flex: none; display: flex; justify-content: center; gap: 8px; }
+  .pc-child-actions .btn { flex: 0 0 auto; padding-left: 12px; padding-right: 12px; }
+  .pc-child-actions .status-quick { flex: 0 0 174px; width: auto; min-width: 0; }
   .pc-foot { padding: 8px 14px 11px; }
+  .prod-head { padding: 10px 12px; }
+  .prod-sec .pc-children { padding: 8px; gap: 8px; }
+  .prod-sec .pc-child { padding: 10px 12px; }
   .day-head { padding: 9px 12px; }
-  .day-body .pc-child { padding: 9px 12px; }
+  .day-body { padding: 8px 10px 10px; }
+  .day-body .pc-child { padding: 10px 12px; }
 }
 </style>
 </head>
@@ -1920,7 +1944,6 @@ body.role-viewer #btn-quick { display: none; }
     <nav id="nav" class="nav" aria-label="Điều hướng chính"></nav>
 
     <div class="sidebar-foot">
-      <div id="timer-widget"></div>
       <div class="sync-note" id="sync-note" data-state="loading" role="status" aria-live="polite">
         <span class="sync-dot" aria-hidden="true"></span>
         <span id="sync-label">Đang kết nối…</span>
@@ -2247,7 +2270,7 @@ __M["js/db.js"] = (() => {
 // Lớp truy cập IndexedDB. Không phụ thuộc giao diện — có thể thay bằng API sau này.
 const DB_NAME = 'content-manager';
 const DB_VERSION = 2;
-const STORES = ['tasks', 'projects', 'contents', 'ideas', 'resources', 'events', 'metrics', 'sessions', 'settings', 'timer'];
+const STORES = ['tasks', 'projects', 'contents', 'ideas', 'resources', 'events', 'metrics', 'sessions', 'settings'];
 
 let dbPromise = null;
 
@@ -2429,11 +2452,16 @@ const F = {
   group: { k: 'groupId', l: 'Nhóm công việc', t: 'select', optsFrom: 'groups' },
   priority: { k: 'priority', l: 'Mức ưu tiên', t: 'select', opts: PRIORITIES },
   taskStatus: { k: 'status', l: 'Trạng thái', t: 'select', opts: TASK_STATUS },
-  projectId: { k: 'projectId', l: 'Thuộc công việc lớn', t: 'select', optsFrom: 'projects' },
+  projectId: { k: 'projectId', l: 'Thuộc đầu mục công việc', t: 'select', optsFrom: 'projects',
+    hint: 'Chọn đầu mục mà việc này góp phần hoàn thành.' },
   start: { k: 'start', l: 'Ngày bắt đầu dự kiến', t: 'date' },
   due: { k: 'due', l: 'Deadline', t: 'date' },
   est: { k: 'estimatedMin', l: 'Thời lượng dự kiến (phút)', t: 'number', min: 0, step: 5 },
   productLink: { k: 'productLink', l: 'Link sản phẩm', t: 'url', full: true },
+  isOutput: { k: 'isOutput', l: 'Đây là sản phẩm cuối (cộng vào tiến độ đầu mục)', t: 'checkbox', full: true,
+    hint: 'Tích khi việc này tạo ra sản phẩm hoàn chỉnh. Ví dụ “Dựng video số 1” là sản phẩm cuối, còn “Viết kịch bản” thì không.' },
+  outputQty: { k: 'outputQty', l: 'Số sản phẩm tính được khi xong', t: 'number', min: 0, step: 1,
+    hint: 'Thường để 1. Dùng khi một việc tạo ra nhiều sản phẩm, ví dụ quay 5 video trong một buổi.' },
 };
 
 const schemas = {
@@ -2445,6 +2473,8 @@ const schemas = {
         fields: [
           F.title,
           F.projectId,
+          F.isOutput,
+          F.outputQty,
           F.group,
           F.priority,
           F.taskStatus,
@@ -2458,8 +2488,6 @@ const schemas = {
         fields: [
           F.desc,
           { k: 'output', l: 'Kết quả đầu ra', t: 'textarea', full: true },
-          { k: 'isOutput', l: 'Tính là 1 sản phẩm khi hoàn thành', t: 'checkbox', full: true,
-            hint: 'Chỉ tích ở bước tạo ra sản phẩm cuối (ví dụ “Đăng video”). Mục tiêu số lượng của công việc lớn đếm các việc được tích ở đây.' },
           F.productLink,
           { k: 'tags', l: 'Nhãn / từ khóa (cách nhau dấu phẩy)', t: 'tags', full: true },
           { k: 'notes', l: 'Ghi chú', t: 'textarea', full: true },
@@ -2481,7 +2509,6 @@ const schemas = {
           { k: 'requestedBy', l: 'Người / bộ phận yêu cầu', t: 'text' },
           { k: 'receivedAt', l: 'Thời điểm tiếp nhận', t: 'date' },
           { k: 'affects', l: 'Kế hoạch bị ảnh hưởng', t: 'text' },
-          { k: 'contentId', l: 'Nội dung liên kết', t: 'select', optsFrom: 'contents' },
           { k: 'eventId', l: 'Sự kiện liên kết', t: 'select', optsFrom: 'events' },
         ],
       },
@@ -2489,25 +2516,30 @@ const schemas = {
   },
 
   project: {
-    title: 'công việc lớn',
+    title: 'đầu mục công việc',
     sections: [
       {
-        title: 'Kế hoạch', open: true,
+        title: 'Kế hoạch tháng', open: true,
         fields: [
-          { k: 'title', l: 'Tên công việc lớn', t: 'text', req: true, full: true },
+          { k: 'title', l: 'Tên đầu mục', t: 'text', req: true, full: true,
+            hint: 'Ví dụ: 30 video TikTok, Hội thảo da liễu, Hỗ trợ đồng nghiệp.' },
           { k: 'groupId', l: 'Nhóm công việc', t: 'select', optsFrom: 'groups' },
           { k: 'priority', l: 'Mức ưu tiên', t: 'select', opts: PRIORITIES },
           { k: 'month', l: 'Kế hoạch tháng', t: 'month' },
           { k: 'due', l: 'Hạn hoàn thành', t: 'date' },
-          { k: 'target', l: 'Số lượng sản phẩm cần đạt', t: 'number', min: 0, step: 1,
-            hint: 'Ví dụ 30 video. Đủ 30 việc được tích “Tính là 1 sản phẩm” là đạt mục tiêu.' },
+          { k: 'target', l: 'Số lượng cần đạt', t: 'number', min: 0, step: 1,
+            hint: 'Để 0 nếu đầu mục không đếm số lượng, ví dụ việc hỗ trợ hay sự kiện.' },
+          { k: 'unit', l: 'Đơn vị', t: 'text',
+            hint: 'video, bài viết, sự kiện, lần hỗ trợ…' },
+          { k: 'pctManual', l: 'Tiến độ tự nhập (%)', t: 'number', min: 0, max: 100, step: 1,
+            hint: 'Để 0 để app tự tính: số sản phẩm cuối đã xong chia cho số lượng cần đạt.' },
         ],
       },
       {
-        title: 'Mô tả và liên kết',
+        title: 'Mục tiêu và liên kết',
         fields: [
-          { k: 'description', l: 'Mô tả / mục tiêu', t: 'textarea', full: true },
-          { k: 'productLink', l: 'Link sản phẩm', t: 'url', full: true },
+          { k: 'description', l: 'Mục tiêu / mô tả', t: 'textarea', full: true },
+          { k: 'productLink', l: 'Link sản phẩm / thư mục', t: 'url', full: true },
           { k: 'notes', l: 'Ghi chú', t: 'textarea', full: true },
         ],
       },
@@ -2525,6 +2557,8 @@ const schemas = {
           { k: 'code', l: 'Mã nội dung', t: 'text' },
           { k: 'brand', l: 'Thương hiệu', t: 'text' },
           { k: 'product', l: 'Sản phẩm / chiến dịch', t: 'text' },
+          { k: 'projectId', l: 'Thuộc đầu mục công việc', t: 'select', optsFrom: 'projects',
+            hint: 'Gắn nội dung với đầu mục để xem chung tiến độ tháng.' },
           { k: 'platform', l: 'Nền tảng', t: 'select', opts: PLATFORMS },
           { k: 'format', l: 'Định dạng', t: 'select', opts: FORMATS },
           { k: 'goal', l: 'Mục tiêu', t: 'select', opts: GOALS },
@@ -2711,17 +2745,17 @@ function blank(entity) {
   if (entity === 'task') {
     return { ...base, title: '', description: '', groupId: 'content', priority: 'medium', status: 'todo',
       projectId: '', project: '', start: '', due: '', estimatedMin: 30, doneAt: '', output: '', docLink: '',
-      productLink: '', sourceLink: '', notes: '', isOutput: false,
+      productLink: '', sourceLink: '', notes: '', isOutput: false, outputQty: 1,
       tags: [], checklist: [], recurrence: null, source: 'plan', requestedBy: '', receivedAt: '',
       affects: '', contentId: '', eventId: '', delayReason: '', sample: false };
   }
   if (entity === 'project') {
     return { ...base, title: '', description: '', groupId: 'content', priority: 'medium',
       month: new Date().toISOString().slice(0, 7), start: '', due: '', status: 'todo', doneAt: '',
-      target: 0, docLink: '', productLink: '', notes: '', sample: false };
+      target: 0, unit: 'sản phẩm', pctManual: 0, docLink: '', productLink: '', notes: '', sample: false };
   }
   if (entity === 'content') {
-    return { ...base, title: '', code: '', brand: '', product: '', platform: 'TikTok', format: 'Video ngắn',
+    return { ...base, title: '', code: '', brand: '', product: '', projectId: '', platform: 'TikTok', format: 'Video ngắn',
       goal: '', audience: '', message: '', people: '', collaborators: '', priority: 'medium', stage: 'idea',
       insight: '', problem: '', topic: '', hook: '', angle: '', reference: '', reason: '',
       script: '', dialogue: '', scenes: '', shots: '', onScreenText: '', cta: '', crewNotes: '', scriptVersions: [],
@@ -2902,7 +2936,7 @@ const { uid } = __M["js/util.js"];
 
 const data = {
   tasks: [], projects: [], contents: [], ideas: [], resources: [], events: [],
-  metrics: [], sessions: [], settings: [], timer: [],
+  metrics: [], sessions: [], settings: [],
 };
 
 const listeners = new Set();
@@ -2999,11 +3033,6 @@ async function remove(name, id) {
     const sessions = all('sessions').filter(s => s.taskId === id);
     for (const s of sessions) await idb.del('sessions', s.id);
     data.sessions = all('sessions').filter(s => s.taskId !== id);
-    const active = data.timer[0];
-    if (active && active.taskId === id) {
-      await idb.del('timer', 'active');
-      data.timer = [];
-    }
   }
 
   if (name === 'contents') {
@@ -3459,97 +3488,6 @@ const dtCell = d => (d ? esc(fmtDateTime(d)) : '<span class="muted">—</span>')
 const linkCell = u => (safeUrl(u) ? link(u, 'Mở liên kết') : '<span class="muted">—</span>');
 
 return { toast, pill, priorityPill, statusPill, emptyState, openModal, confirmDialog, formValues, openForm, dl, dateCell, dtCell, linkCell };
-})();
-
-// ---- js/timer.js ----
-__M["js/timer.js"] = (() => {
-// Bộ đếm thời gian: chỉ 1 bộ đếm, thời lượng tính từ mốc thời gian thực nên reload vẫn đúng.
-const { data, all, save, emit, find } = __M["js/store.js"];
-const idb = __M["js/db.js"];
-const { today, fmtDur, uid } = __M["js/util.js"];
-
-const activeTimer = () => all('timer')[0] || null;
-const isRunning = (t = activeTimer()) => !!(t && t.startedAt);
-
-function elapsedMs(t = activeTimer()) {
-  if (!t) return 0;
-  return (Number(t.accumulatedMs) || 0) + (t.startedAt ? Date.now() - t.startedAt : 0);
-}
-
-function clockLabel(t = activeTimer()) {
-  const total = Math.floor(elapsedMs(t) / 1000);
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-async function start(taskId, note = '') {
-  const cur = activeTimer();
-  if (cur) {
-    if (cur.taskId !== taskId) throw new Error('Đang có bộ đếm khác. Hãy dừng bộ đếm đó trước.');
-    if (!cur.startedAt) {
-      cur.startedAt = Date.now();
-      await idb.put('timer', cur);
-      data.timer = [cur];
-      emit('timer');
-    }
-    return cur;
-  }
-  const rec = { id: 'active', taskId, startedAt: Date.now(), firstStartedAt: Date.now(), accumulatedMs: 0, note };
-  await idb.put('timer', rec);
-  data.timer = [rec];
-  emit('timer');
-  return rec;
-}
-
-async function pause() {
-  const cur = activeTimer();
-  if (!cur || !cur.startedAt) return;
-  cur.accumulatedMs = elapsedMs(cur);
-  cur.startedAt = null;
-  await idb.put('timer', cur);
-  data.timer = [cur];
-  emit('timer');
-}
-
-async function resume() {
-  const cur = activeTimer();
-  if (!cur || cur.startedAt) return;
-  cur.startedAt = Date.now();
-  await idb.put('timer', cur);
-  data.timer = [cur];
-  emit('timer');
-}
-
-async function stop() {
-  const cur = activeTimer();
-  if (!cur) return null;
-  const ms = elapsedMs(cur);
-  const task = find('tasks', cur.taskId);
-  const minutes = Math.max(1, Math.round(ms / 60000));
-  const session = await save('sessions', {
-    id: '', taskId: cur.taskId || '', contentId: task?.contentId || '',
-    date: today(), minutes,
-    startedAt: cur.firstStartedAt ? new Date(cur.firstStartedAt).toISOString() : '',
-    endedAt: new Date().toISOString(),
-    note: cur.note || '', manual: false, sample: false,
-  });
-  await idb.del('timer', 'active');
-  data.timer = [];
-  emit('timer');
-  return { session, minutes, task };
-}
-
-async function discard() {
-  await idb.del('timer', 'active');
-  data.timer = [];
-  emit('timer');
-}
-
-const durationText = min => fmtDur(min);
-
-return { activeTimer, isRunning, elapsedMs, clockLabel, start, pause, resume, stop, discard, durationText };
 })();
 
 // ---- js/logic.js ----
@@ -4198,21 +4136,14 @@ return { cloudConfigured, cloudState, cloudStatusText, cloudLabel, subscribeClou
 __M["js/actions.js"] = (() => {
 // Hành động dùng chung giữa các màn hình (hoàn thành, đổi trạng thái, xoá, tạo nhiệm vụ…).
 const { all, find, save, remove } = __M["js/store.js"];
-const { openModal, openForm, confirmDialog, toast, emptyState } = __M["js/ui.js"];
+const { openModal, confirmDialog, toast } = __M["js/ui.js"];
 const { nextRecurringTask } = __M["js/logic.js"];
-const { stageLabel } = __M["js/schema.js"];
 const { today, addDays, esc, fmtDate } = __M["js/util.js"];
-const timer = __M["js/timer.js"];
 
 const taskProgress = t => {
   const cl = t.checklist || [];
   const done = cl.filter(i => i.done).length;
   return { done, total: cl.length, pct: cl.length ? Math.round((done / cl.length) * 100) : 0 };
-};
-
-const isTaskRunning = t => {
-  const a = timer.activeTimer();
-  return !!a && a.taskId === t.id && timer.isRunning(a);
 };
 
 async function completeTask(task) {
@@ -4227,7 +4158,6 @@ async function completeTask(task) {
     if (!ok) return false;
   }
   const saved = await save('tasks', { ...task, status: 'done', doneAt: today() });
-  if (timer.activeTimer()?.taskId === task.id) await timer.stop();
 
   const next = nextRecurringTask(saved);
   if (next) {
@@ -4246,7 +4176,7 @@ async function reopenTask(task) {
 
 async function setTaskStatus(task, status) {
   if (status === 'done') return completeTask(task);
-  await save('tasks', { ...task, status });
+  await save('tasks', { ...task, status, doneAt: '' });
   return true;
 }
 
@@ -4259,7 +4189,6 @@ async function deleteTask(task) {
     okLabel: 'Xoá', danger: true,
   });
   if (!ok) return false;
-  if (timer.activeTimer()?.taskId === task.id) await timer.discard();
   await remove('tasks', task.id);
   toast('Đã xoá công việc.', 'success');
   return true;
@@ -4323,166 +4252,42 @@ async function quickNote(task) {
   });
 }
 
-async function toggleTimer(task) {
-  const a = timer.activeTimer();
-  try {
-    if (a && a.taskId === task.id) {
-      if (timer.isRunning(a)) { await timer.pause(); toast('Đã tạm dừng bộ đếm.'); }
-      else { await timer.resume(); toast('Đã tiếp tục bộ đếm.'); }
-      return;
-    }
-    if (a) {
-      const other = find('tasks', a.taskId);
-      const ok = await confirmDialog({
-        title: 'Đang có bộ đếm khác',
-        message: `Bộ đếm đang chạy cho "${other?.title || 'công việc khác'}". Dừng và ghi nhận thời gian trước khi bắt đầu việc mới?`,
-        okLabel: 'Dừng và bắt đầu',
-      });
-      if (!ok) return;
-      await timer.stop();
-    }
-    await timer.start(task.id);
-    toast('Đã bắt đầu bộ đếm.', 'success');
-  } catch (e) {
-    toast(e.message || 'Không điều khiển được bộ đếm.', 'error');
-  }
-}
-
-// Tạo các nhiệm vụ sản xuất từ một nội dung, dựa trên ngày đăng dự kiến.
-function createContentTasks(content) {
-  const existing = all('tasks').filter(t => t.contentId === content.id).length;
-  const body = `
-    <p>Tạo các nhiệm vụ liên kết với <b>${esc(content.title)}</b>${existing ? ` (đã có ${existing} nhiệm vụ liên kết)` : ''}.</p>
-    <div class="field"><label>Chọn mẫu quy trình</label>
-      <select id="tpl">
-        <option value="full">Đầy đủ: kịch bản → quay → dựng → đăng</option>
-        <option value="short">Rút gọn: kịch bản → đăng bài</option>
-        <option value="custom">Chỉ một nhiệm vụ</option>
-      </select>
-    </div>
-    <div class="notice info">Mốc thời gian được tính lùi từ ngày đăng dự kiến (${content.planPublish ? fmtDate(content.planPublish) : 'chưa đặt — dùng hôm nay'}). Bạn sửa lại từng nhiệm vụ sau khi tạo.</div>`;
-  openModal({
-    title: 'Tạo nhiệm vụ sản xuất',
-    content: body,
-    actions: [
-      { label: 'Hủy', cls: 'ghost', onClick: c => c() },
-      {
-        label: 'Tạo nhiệm vụ', cls: 'primary', onClick: async (close, wrap) => {
-          const tpl = wrap.querySelector('#tpl').value;
-          const pub = content.planPublish || addDays(today(), 3);
-          const defs = tpl === 'full'
-            ? [
-              ['Viết kịch bản', 'content', addDays(pub, -5), 90],
-              ['Quay nội dung', 'shoot', addDays(pub, -3), 120],
-              ['Dựng và hoàn thiện', 'shoot', addDays(pub, -2), 180],
-              ['Đăng bài', 'distribute', pub, 30],
-            ]
-            : tpl === 'short'
-              ? [
-                ['Viết kịch bản', 'content', addDays(pub, -3), 60],
-                ['Đăng bài', 'distribute', pub, 20],
-              ]
-              : [['Thực hiện nội dung', content.stage === 'editing' ? 'shoot' : 'content', pub, 60]];
-          try {
-            const projectId = content.product
-              ? await __M["js/projects.js"].ensureProject(content.product, {
-                groupId: 'content', priority: content.priority, due: pub,
-              })
-              : '';
-            for (const [title, groupId, due, estimatedMin] of defs) {
-              await save('tasks', {
-                id: '', title: `${title}: ${content.title}`, groupId, priority: content.priority || 'medium',
-                status: 'todo', projectId, project: '', start: '', due, estimatedMin, contentId: content.id,
-                createdAt: new Date().toISOString(), tags: [], checklist: [], recurrence: null,
-                source: 'plan', description: '', notes: '', output: '', docLink: '',
-              });
-            }
-            close();
-            toast(`Đã tạo ${defs.length} nhiệm vụ liên kết.`, 'success');
-          } catch (e) {
-            toast('Không tạo được nhiệm vụ: ' + e.message, 'error');
-          }
-        },
-      },
-    ],
-  });
-}
-
-function openContentTasks(content) {
-  const list = all('tasks').filter(t => t.contentId === content.id);
-  const body = list.length
-    ? `<table class="table"><tbody>${list.map(t => `<tr>
-        <td>${esc(t.title)}<div class="small muted">${esc(fmtDate(t.due) || 'Không deadline')} · ${esc(stageLabel(t.status))}</div></td>
-      </tr>`).join('')}</tbody></table>`
-    : emptyState('Chưa có nhiệm vụ liên kết', 'Dùng nút "Tạo nhiệm vụ sản xuất" để sinh các bước.');
-  openModal({
-    title: `Nhiệm vụ của: ${content.title}`,
-    content: body,
-    wide: false,
-    actions: [
-      { label: 'Tạo nhiệm vụ', cls: 'primary', onClick: close => { close(); createContentTasks(content); } },
-      { label: 'Đóng', cls: 'ghost', onClick: c => c() },
-    ],
-  });
-}
-
-// Kế hoạch ngược: ngày đăng -> các mốc trước đó, người dùng sửa được.
+// Mốc sản xuất: tính lùi từ ngày đăng dự kiến và ghi thẳng vào hồ sơ nội dung (không tạo công việc).
 function backwardPlan(content) {
   const pub = content.planPublish || addDays(today(), 7);
   const rows = [
-    ['Hoàn thiện kịch bản', addDays(pub, -7)],
-    ['Duyệt kịch bản', addDays(pub, -6)],
-    ['Quay', addDays(pub, -4)],
-    ['Hoàn thành dựng', addDays(pub, -2)],
-    ['Duyệt bản dựng', addDays(pub, -1)],
-    ['Đăng bài', pub],
+    ['Hạn hoàn thiện kịch bản', 'scriptDue', addDays(pub, -7)],
+    ['Ngày quay dự kiến', 'shootDate', addDays(pub, -4)],
+    ['Hạn hoàn thiện bản dựng', 'finalDue', addDays(pub, -2)],
+    ['Ngày đăng dự kiến', 'planPublish', pub],
   ];
   const body = `<p>Ngày đăng dự kiến: <b>${esc(fmtDate(pub))}</b>. Đây là gợi ý, hãy sửa từng mốc nếu cần.</p>
-    <table class="table"><thead><tr><th>Mốc</th><th>Ngày</th><th>Tạo nhiệm vụ</th></tr></thead><tbody>
-    ${rows.map(([l, d], i) => `<tr><td>${esc(l)}</td>
-      <td><input type="date" name="bp-${i}" value="${esc(d)}"></td>
-      <td><input type="checkbox" name="bpk-${i}" ${i === 5 ? '' : 'checked'}></td></tr>`).join('')}
+    <div class="notice info">Các mốc được lưu thẳng vào hồ sơ nội dung. Ứng dụng dùng chúng để cảnh báo trễ và vẽ lịch, không tạo công việc.</div>
+    <table class="table"><thead><tr><th>Mốc</th><th>Ngày</th></tr></thead><tbody>
+    ${rows.map(([l, k, d], i) => `<tr><td>${esc(l)}</td>
+      <td><input type="date" name="bp-${i}" data-key="${esc(k)}" value="${esc(String(content[k] || d).slice(0, 10))}"></td></tr>`).join('')}
     </tbody></table>`;
   openModal({
-    title: 'Lập kế hoạch ngược',
+    title: 'Mốc sản xuất',
     content: body,
     actions: [
       { label: 'Hủy', cls: 'ghost', onClick: c => c() },
       {
-        label: 'Áp dụng', cls: 'primary', onClick: async (close, wrap) => {
-          const tasksToMake = [];
-          rows.forEach(([l], i) => {
-            if (!wrap.querySelector(`[name=bpk-${i}]`).checked) return;
-            const d = wrap.querySelector(`[name=bp-${i}]`).value;
-            if (!d) return;
-            tasksToMake.push([l, d]);
-          });
-          if (!tasksToMake.length) { toast('Chưa chọn mốc nào để tạo nhiệm vụ.', 'error'); return; }
+        label: 'Lưu mốc', cls: 'primary', onClick: async (close, wrap) => {
+          const patch = {};
+          for (const input of wrap.querySelectorAll('[data-key]')) patch[input.dataset.key] = input.value || '';
           try {
-            const projectId = content.product
-              ? await __M["js/projects.js"].ensureProject(content.product, {
-                groupId: 'content', priority: content.priority, due: pub,
-              })
-              : '';
-            for (const [l, d] of tasksToMake) {
-              await save('tasks', {
-                id: '', title: `${l}: ${content.title}`, groupId: l.includes('Quay') ? 'shoot' : l === 'Đăng bài' ? 'distribute' : 'content',
-                priority: content.priority || 'medium', status: 'todo', projectId, project: '',
-                start: '', due: d, estimatedMin: l.includes('Quay') ? 120 : l.includes('dựng') ? 180 : 60,
-                contentId: content.id, createdAt: new Date().toISOString(), tags: [], checklist: [],
-                recurrence: null, source: 'plan', description: '', notes: '', output: '', docLink: '',
-              });
-            }
+            await save('contents', { ...content, ...patch });
             close();
-            toast(`Đã tạo ${tasksToMake.length} nhiệm vụ theo kế hoạch ngược.`, 'success');
-          } catch (e) { toast('Không tạo được: ' + e.message, 'error'); }
+            toast('Đã lưu mốc sản xuất cho nội dung.', 'success');
+          } catch (e) { toast('Không lưu được mốc: ' + e.message, 'error'); }
         },
       },
     ],
   });
 }
 
-return { taskProgress, isTaskRunning, completeTask, reopenTask, setTaskStatus, deleteTask, deleteRecord, moveToTomorrow, quickNote, toggleTimer, createContentTasks, openContentTasks, backwardPlan };
+return { taskProgress, completeTask, reopenTask, setTaskStatus, deleteTask, deleteRecord, moveToTomorrow, quickNote, backwardPlan };
 })();
 
 // ---- js/agenda.js ----
@@ -4579,10 +4384,9 @@ const { today, addDays, startOfWeek, fmtDate, esc, fmtDur } = __M["js/util.js"];
 const { todayTasks, isOpen, isOverdue, overdueDays, isDueSoon, workStats, timeStats, contentStats, contentInProduction, isDoneIn, sortTasks } = __M["js/logic.js"];
 const { STAGES } = __M["js/schema.js"];
 const { openForm, openModal, toast, priorityPill, emptyState } = __M["js/ui.js"];
-const { completeTask, toggleTimer, moveToTomorrow, quickNote, taskProgress, isTaskRunning } = __M["js/actions.js"];
+const { completeTask, moveToTomorrow, quickNote, taskProgress } = __M["js/actions.js"];
 const { agendaItems, dayLabel } = __M["js/agenda.js"];
 const { currentAlerts } = __M["js/notify.js"];
-const timer = __M["js/timer.js"];
 
 const stat = (label, value, sub, href = '', tone = '') => `
   <div class="card stat${tone ? ' ' + tone : ''}">
@@ -4603,7 +4407,6 @@ const dueText = t => {
 
 function taskRow(t) {
   const p = taskProgress(t);
-  const running = isTaskRunning(t);
   return `<div class="task-row" data-id="${esc(t.id)}">
     <input type="checkbox" data-done aria-label="Hoàn thành">
     <div class="task-main">
@@ -4613,11 +4416,9 @@ function taskRow(t) {
         ${dueText(t)}
         <span class="tag">${esc(groupName(t.groupId))}</span>
         ${p.total ? `<span class="tag">${p.done}/${p.total} bước</span>` : ''}
-        ${t.contentId ? '<span class="tag">nội dung</span>' : ''}
       </div>
     </div>
     <div class="task-actions">
-      <button class="btn sm" data-timer>${running ? 'Tạm dừng' : 'Bắt đầu'}</button>
       <button class="btn sm" data-tomorrow>→ Mai</button>
       <button class="btn sm ghost" data-note>Ghi chú</button>
     </div>
@@ -4758,7 +4559,6 @@ function render(view, params = {}) {
   const todays = todayTasks(tasks, ref);
   const upcoming = agendaItems(ref, addDays(ref, 14)).filter(i => i.date >= ref).slice(0, 10);
   const alerts = currentAlerts(ref);
-  const running = timer.activeTimer();
 
   const goals = s.goals || {};
   const videoCount = cs.publishedList.filter(c => /video/i.test(c.format || '')).length;
@@ -4781,7 +4581,7 @@ function render(view, params = {}) {
       ${stat('Sắp đến hạn', dueSoon.length, `Trong ${s.notify?.leadDays ?? 2} ngày tới`, '#/tasks?tab=today')}
       ${stat('Quá hạn', overdue.length, overdue.length ? 'Cần xử lý ngay' : 'Không có việc trễ', '#/tasks?tab=overdue', overdue.length ? 'alert' : '')}
       ${stat('Hoàn thành tuần này', doneWeek, `${planRate === null ? '—' : planRate + '%'} kế hoạch tuần`, '#/tasks?status=done')}
-      ${stat('Nội dung đang sản xuất', inProd.length, 'Chưa đăng / chưa hoàn tất', '#/content')}
+      ${stat('Nội dung đang sản xuất', inProd.length, 'Chưa đăng / chưa hoàn tất', '#/content?tab=list')}
       ${stat('Đã xuất bản trong tuần', cs.published, 'Theo ngày đăng thực tế', '#/content?tab=metrics')}
       ${stat('Sự kiện & lịch quay', agendaItems(ref, addDays(ref, 14), ['shoot', 'event']).length, 'Trong 14 ngày tới', '#/calendar')}
       ${stat('Thời gian đã ghi nhận', esc(fmtDur(ts.total)), 'Tuần này, từ phiên làm việc', '#/reports')}
@@ -4873,7 +4673,6 @@ function render(view, params = {}) {
       const task = find('tasks', row.dataset.id);
       if (!task) return;
       if (e.target.closest('[data-edit]')) { e.preventDefault(); openForm('task', task); return; }
-      if (e.target.closest('[data-timer]')) { await toggleTimer(task); return; }
       if (e.target.closest('[data-tomorrow]')) { await moveToTomorrow(task); return; }
       if (e.target.closest('[data-note]')) { quickNote(task); return; }
     }
@@ -4904,8 +4703,6 @@ function render(view, params = {}) {
     if (!ok) e.target.checked = false;
   });
 
-  // Giữ bộ đếm hiển thị đúng khi quay lại tab.
-  if (running) view.querySelector('#btn-plan-day')?.blur();
 }
 
 const viewMeta = { title: 'Tổng quan', route: 'dashboard' };
@@ -4915,61 +4712,98 @@ return { render, viewMeta };
 
 // ---- js/projects.js ----
 __M["js/projects.js"] = (() => {
-// Công việc lớn: đầu mục gom các việc nhỏ. Tiến độ và trạng thái suy ra từ việc nhỏ
-// để "xong hết việc con" tự động thành 100% và chuyển sang Hoàn thành.
+// Đầu mục công việc: gom các việc thực thi của một mảng việc trong tháng (video, sự kiện,
+// hỗ trợ…). Tiến độ = số sản phẩm cuối đã xong / số lượng cần đạt. Đầu mục cũ có nội dung
+// nhưng chưa tích sản phẩm cuối thì tạm đếm số nội dung đã đăng để không mất dữ liệu.
 const { all, find, save, subscribe } = __M["js/store.js"];
-const { blank } = __M["js/schema.js"];
+const { blank, PUBLISHED_STAGES } = __M["js/schema.js"];
 const { today, debounce } = __M["js/util.js"];
 
 const isViewer = () => window.__CW_ROLE === 'viewer';
 const keyOf = s => String(s || '').trim().toLowerCase();
 
+// Màu nhận diện đầu mục: ổn định theo id để thẻ và việc luôn cùng một màu.
+const COLORS = [
+  '#6366f1', '#0d9488', '#d97706', '#0284c7',
+  '#e11d48', '#7c3aed', '#65a30d', '#ea580c',
+];
+
+function colorOf(projectOrId) {
+  const project = typeof projectOrId === 'string' ? find('projects', projectOrId) : projectOrId;
+  const key = String(project?.id || project?.title || projectOrId || '');
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  return { c: COLORS[hash % COLORS.length] };
+}
+
 function childrenOf(projectId) {
   return all('tasks').filter(t => t.projectId === projectId && t.status !== 'cancelled');
+}
+
+function contentsOf(projectId) {
+  return all('contents').filter(c => c.projectId === projectId && c.stage !== 'cancelled');
 }
 
 function targetOf(project) {
   return Math.max(0, Math.floor(Number(project?.target) || 0));
 }
 
-// Việc được tích "tính là 1 sản phẩm". Nếu chưa tích việc nào thì tạm đếm mọi việc đã xong
-// để dữ liệu cũ vẫn chạy như trước.
-function countsOutput(task) {
-  return !!task.isOutput;
+// Một việc có thể tạo ra nhiều sản phẩm (ví dụ quay 5 video trong một buổi).
+function qtyOf(task) {
+  return Math.max(1, Math.floor(Number(task?.outputQty) || 1));
 }
 
 function progressOf(projectId) {
   const project = find('projects', projectId);
   const items = childrenOf(projectId);
-  const done = items.filter(t => t.status === 'done').length;
-  const minutes = items.reduce((sum, t) => sum + (Number(t.estimatedMin) || 0), 0);
+  const contents = contentsOf(projectId);
   const target = targetOf(project);
-  const marked = items.filter(countsOutput);
-  const outputs = marked.filter(t => t.status === 'done').length;
+  const manual = Math.max(0, Math.min(100, Math.floor(Number(project?.pctManual) || 0)));
+  const minutes = items.reduce((sum, t) => sum + (Number(t.estimatedMin) || 0), 0);
+  const done = items.filter(t => t.status === 'done').length;
+
+  // Chỉ việc được tích "sản phẩm cuối" và đã xong mới cộng vào số lượng hoàn thành.
+  const marked = items.filter(t => t.isOutput);
+  const outputs = marked.filter(t => t.status === 'done').reduce((sum, t) => sum + qtyOf(t), 0);
+  const markedQty = marked.reduce((sum, t) => sum + qtyOf(t), 0);
+
+  // Tương thích dữ liệu cũ: header có nội dung nhưng chưa tích sản phẩm cuối nào.
+  const published = contents.filter(c => PUBLISHED_STAGES.includes(c.stage)).length;
+  const legacy = !marked.length && contents.length > 0;
+  const produced = legacy ? published : outputs;
+  const goal = legacy ? (target || contents.length) : target;
+  const pct = manual
+    ? manual
+    : goal
+      ? Math.min(100, Math.round((produced / goal) * 100))
+      : (items.length ? Math.round((done / items.length) * 100) : 0);
+  const allDone = legacy
+    ? (contents.length > 0 && published === contents.length)
+    : (items.length > 0 && done === items.length);
+
   return {
-    items, done, total: items.length, minutes, target, outputs,
-    marked: marked.length, hasMarks: marked.length > 0,
-    reached: target ? outputs >= target : items.length > 0 && done === items.length,
-    pct: target
-      ? Math.min(100, Math.round((outputs / target) * 100))
-      : (items.length ? Math.round((done / items.length) * 100) : 0),
+    items, contents, minutes, target, manual, done, total: items.length,
+    marked: marked.length, markedQty, outputs, produced, goal, legacy, pct,
+    reached: goal ? produced >= goal : allDone,
   };
 }
 
-// Không có việc con thì giữ trạng thái đã lưu (dùng cho đầu mục trống).
+// Không có việc lẫn nội dung thì giữ trạng thái đã lưu (dùng cho đầu mục trống).
 function derivedStatus(project) {
   if (project.status === 'cancelled') return 'cancelled';
-  const items = childrenOf(project.id);
-  if (!items.length) return project.status || 'todo';
-  const target = targetOf(project);
-  const done = items.filter(t => t.status === 'done').length;
-  if (target) {
-    const outputs = items.filter(t => countsOutput(t) && t.status === 'done').length;
-    return outputs >= target ? 'done' : (items.some(t => t.status !== 'todo') ? 'doing' : 'todo');
+  const prog = progressOf(project.id);
+  if (prog.target) {
+    if (prog.produced >= prog.target) return 'done';
+    if (prog.produced > 0 || prog.done > 0) return 'doing';
+    return prog.contents.some(c => !['idea', 'selected'].includes(c.stage)) ? 'doing' : 'todo';
   }
-  if (items.every(t => t.status === 'done')) return 'done';
-  if (items.some(t => t.status !== 'todo')) return 'doing';
-  return 'todo';
+  if (prog.legacy) {
+    if (prog.contents.length && prog.produced === prog.contents.length) return 'done';
+    return prog.produced || prog.contents.some(c => !['idea', 'selected'].includes(c.stage)) ? 'doing' : 'todo';
+  }
+  if (!prog.total) return project.status || 'todo';
+  if (prog.done === prog.total) return 'done';
+  return prog.done > 0 || prog.items.some(t => t.status !== 'todo') ? 'doing' : 'todo';
 }
 
 async function syncProject(id) {
@@ -4984,7 +4818,7 @@ async function syncProject(id) {
       doneAt: status === 'done' ? (p.doneAt || today()) : '',
     });
   } catch (e) {
-    console.warn('Không cập nhật được trạng thái công việc lớn', e);
+    console.warn('Không cập nhật được trạng thái đầu mục', e);
     return null;
   }
 }
@@ -5044,11 +4878,11 @@ async function init() {
   try { await syncAll(); } catch (e) { console.warn('Đồng bộ tiến độ', e); }
   subscribe((type, payload) => {
     if (type === 'import' || type === 'clear') { reconcile(); return; }
-    if (payload?.name === 'tasks') reconcile();
+    if (payload?.name === 'tasks' || payload?.name === 'contents') reconcile();
   });
 }
 
-return { childrenOf, progressOf, derivedStatus, syncProject, syncAll, ensureProject, migrateLegacy, init };
+return { childrenOf, contentsOf, progressOf, derivedStatus, qtyOf, colorOf, syncProject, syncAll, ensureProject, migrateLegacy, init };
 })();
 
 // ---- js/views/tasks.js ----
@@ -5057,11 +4891,10 @@ __M["js/views/tasks.js"] = (() => {
 const { all, find, settings, groupName, save, remove } = __M["js/store.js"];
 const { today, addDays, fmtDate, fmtDur, esc, startOfWeek, weekdayName, safeUrl, norm, searchMatch } = __M["js/util.js"];
 const { todayTasks, isOpen, isOverdue, overdueDays, sortTasks, sessionMinutes } = __M["js/logic.js"];
-const { TASK_STATUS, statusLabel, priorityLabel, PRIORITIES, blank } = __M["js/schema.js"];
+const { TASK_STATUS, statusLabel, priorityLabel, PRIORITIES, blank, stageLabel } = __M["js/schema.js"];
 const { openForm, toast, priorityPill, statusPill, emptyState, confirmDialog } = __M["js/ui.js"];
-const { completeTask, reopenTask, deleteTask, toggleTimer, moveToTomorrow, quickNote, taskProgress, isTaskRunning } = __M["js/actions.js"];
+const { completeTask, setTaskStatus, deleteTask, moveToTomorrow, quickNote, taskProgress } = __M["js/actions.js"];
 const projectsApi = __M["js/projects.js"];
-const timer = __M["js/timer.js"];
 
 const PAGE = 40;
 const state = {
@@ -5141,8 +4974,8 @@ function filtersHtml(projects) {
         <option value="">Mọi ưu tiên</option>
         ${PRIORITIES.map(p => `<option value="${p.v}"${state.priority === p.v ? ' selected' : ''}>${p.l}</option>`).join('')}
       </select>
-      <select data-filter="project" aria-label="Công việc lớn">
-        <option value="">Mọi công việc lớn</option>
+      <select data-filter="project" aria-label="Đầu mục công việc">
+        <option value="">Mọi đầu mục</option>
         <option value="__none__"${state.project === '__none__' ? ' selected' : ''}>Chưa gắn đầu mục</option>
         ${projects.map(p => `<option value="${esc(p.id)}"${state.project === p.id ? ' selected' : ''}>${esc(p.title)}</option>`).join('')}
       </select>
@@ -5173,7 +5006,6 @@ function rowHtml(t) {
         ${t.recurrence ? '<span class="tag">định kỳ</span>' : ''}
         ${t.source === 'support' ? '<span class="tag">hỗ trợ</span>' : ''}
         ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
-        ${isTaskRunning(t) ? '<span class="pill blue">đang tính giờ</span>' : ''}
       </div>
     </td>
     <td>${esc(groupName(t.groupId))}</td>
@@ -5183,8 +5015,7 @@ function rowHtml(t) {
     <td class="num">${esc(fmtDur(t.estimatedMin))}</td>
     <td class="num">${actual ? esc(fmtDur(actual)) : '<span class="muted">—</span>'}</td>
     <td style="white-space:nowrap">
-      <button class="btn sm" data-timer title="Bắt đầu/tạm dừng">${isTaskRunning(t) ? '⏸' : '▶'}</button>
-      <button class="btn sm ghost" data-delete title="Xoá">×</button>
+      <button class="btn sm soft-danger" data-delete title="Xoá việc">Xoá</button>
     </td>
   </tr>`;
 }
@@ -5305,10 +5136,17 @@ function projectsInMonth() {
 }
 
 function projectTasks(p) {
-  return all('tasks').filter(t => t.projectId === p.id && t.status !== 'cancelled')
+  const m = state.planMonth;
+  return all('tasks').filter(t => t.projectId === p.id
+      && (!t.due || String(t.due).slice(0, 7) === m))
     .sort((a, b) =>
       String(a.due || '9999-99-99').localeCompare(String(b.due || '9999-99-99'))
       || String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+}
+
+function projectOtherMonthCount(p) {
+  return all('tasks').filter(t => t.projectId === p.id && t.status !== 'cancelled'
+    && t.due && String(t.due).slice(0, 7) !== state.planMonth).length;
 }
 
 function planToolbar() {
@@ -5329,25 +5167,29 @@ function planToolbar() {
     </div>
     <span class="spacer"></span>
     ${isMonth
-      ? '<button type="button" class="btn primary" data-new-project>+ Công việc lớn</button>'
-      : '<button type="button" class="btn primary" data-new-task>+ Công việc</button>'}
+      ? '<button type="button" class="btn primary" data-new-project>+ Đầu mục</button><button type="button" class="btn" data-new-task>+ Việc</button>'
+      : '<button type="button" class="btn primary" data-new-task>+ Việc</button>'}
   </div>`;
 }
 
 function monthSummary() {
   const ps = projectsInMonth();
   const doneProjects = ps.filter(p => projectsApi.derivedStatus(p) === 'done').length;
-  let done = 0, total = 0, planMin = 0;
+  let produced = 0, goal = 0, workDone = 0, workTotal = 0, planMin = 0;
   for (const p of ps) {
     const prog = projectsApi.progressOf(p.id);
-    done += prog.done; total += prog.total; planMin += prog.minutes;
+    planMin += prog.minutes;
+    if (prog.target) { produced += prog.produced; goal += prog.target; }
+    workDone += prog.done;
+    workTotal += prog.total;
   }
   return `<div class="plan-summary">
-    <span><b>${ps.length}</b> công việc lớn</span>
-    <span><b>${doneProjects}</b> đã hoàn thành</span>
-    <span><b>${done}/${total}</b> việc nhỏ xong</span>
+    <span><b>${ps.length}</b> đầu mục</span>
+    <span><b>${doneProjects}</b> đã đạt</span>
+    ${goal ? `<span><b>${produced}/${goal}</b> sản phẩm hoàn thành</span>` : ''}
+    ${workTotal ? `<span><b>${workDone}/${workTotal}</b> việc xong</span>` : ''}
     <span>Dự kiến <b>${esc(fmtDur(planMin))}</b></span>
-    <span class="muted">Mục tiêu đếm các việc được tích “Tính là 1 sản phẩm”, không đếm mọi bước nhỏ.</span>
+    <span class="muted">Tiến độ = số việc được tích “sản phẩm cuối” đã xong chia cho số lượng cần đạt.</span>
   </div>`;
 }
 
@@ -5356,12 +5198,12 @@ function childRow(t, showProject = false) {
   const steps = taskProgress(t);
   const due = String(t.due || '').slice(0, 10);
   const product = safeUrl(t.productLink);
-  return `<div class="pc-child${t.status === 'done' ? ' is-done' : ''}" data-id="${esc(t.id)}">
-    <input type="checkbox" data-child-done aria-label="Hoàn thành việc nhỏ"${t.status === 'done' ? ' checked' : ''}>
+  const qty = projectsApi.qtyOf(t);
+  const color = projectsApi.colorOf(t.projectId).c;
+  return `<div class="pc-child${t.status === 'done' ? ' is-done' : ''}${t.status === 'cancelled' ? ' is-cancelled' : ''}" data-id="${esc(t.id)}" style="--pc-color:${color}">
     <div class="pc-child-main">
       <button type="button" class="pc-child-title" data-edit="${esc(t.id)}">${esc(t.title)}</button>
       <div class="pc-child-meta">
-        ${statusPill(t.status)}
         ${showProject && t.projectId ? `<span class="tag">${esc(projectTitle(t))}</span>` : ''}
         ${due
           ? `<span class="tag${isOverdue(t) ? ' tag-red' : ''}">${esc(fmtDate(due))}${isOverdue(t) ? ` · trễ ${overdueDays(t)}n` : ''}</span>`
@@ -5369,14 +5211,15 @@ function childRow(t, showProject = false) {
         <span class="tag">dự kiến ${esc(fmtDur(t.estimatedMin))}</span>
         <span class="tag">thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
         ${steps.total ? `<span class="tag">${steps.done}/${steps.total} bước</span>` : ''}
-        ${t.isOutput ? '<span class="tag">tính sản phẩm</span>' : ''}
+        ${t.isOutput ? `<span class="tag tag-out">sản phẩm cuối${qty > 1 ? ` ×${qty}` : ''}</span>` : ''}
         ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
-        ${isTaskRunning(t) ? '<span class="pill blue">đang tính giờ</span>' : ''}
       </div>
     </div>
     <div class="pc-child-actions">
-      <button type="button" class="btn sm ghost" data-timer title="${isTaskRunning(t) ? 'Tạm dừng tính giờ' : 'Bắt đầu tính giờ'}">${isTaskRunning(t) ? '⏸' : '▶'}</button>
-      <button type="button" class="btn sm ghost" data-del-child title="Xoá việc nhỏ">×</button>
+      <select class="status-quick st-${esc(t.status)}" data-quick-status aria-label="Trạng thái công việc" title="Chuyển trạng thái nhanh">
+        ${TASK_STATUS.map(s => `<option value="${s.v}"${s.v === t.status ? ' selected' : ''}>${s.l}</option>`).join('')}
+      </select>
+      <button type="button" class="btn sm soft-danger" data-del-child title="Xoá việc">Xoá</button>
     </div>
   </div>`;
 }
@@ -5384,25 +5227,39 @@ function childRow(t, showProject = false) {
 function projectCard(p) {
   const prog = projectsApi.progressOf(p.id);
   const items = projectTasks(p);
+  const linkedContents = prog.contents;
   const actual = items.reduce((sum, t) => sum + sessionMinutes(all('sessions'), t.id), 0);
   const liveStatus = projectsApi.derivedStatus(p);
-  const pct = (prog.total || prog.target) ? prog.pct : (liveStatus === 'done' ? 100 : 0);
+  const pct = prog.pct;
   const overdue = items.filter(t => isOverdue(t)).length;
   const todayCount = items.filter(t => String(t.due || '').slice(0, 10) === today() && t.status !== 'done').length;
   const product = safeUrl(p.productLink);
-  return `<section class="card project-card${liveStatus === 'done' ? ' is-done' : ''}" data-project="${esc(p.id)}">
+  const otherMonth = projectOtherMonthCount(p);
+  const unit = String(p.unit || 'sản phẩm').trim() || 'sản phẩm';
+  const color = projectsApi.colorOf(p).c;
+  const progressText = prog.manual
+    ? `Tiến độ tự nhập ${prog.manual}%`
+    : prog.legacy
+      ? `${prog.produced}/${prog.goal} nội dung đã đăng`
+      : prog.target
+        ? `${prog.produced}/${prog.target} ${unit}`
+        : `${prog.done}/${prog.total} việc xong`;
+  return `<section class="card project-card${liveStatus === 'done' ? ' is-done' : ''}" data-project="${esc(p.id)}" style="--pc-color:${color}">
     <div class="pc-head">
       <div class="pc-title">
-        <span class="tg-kicker">Công việc lớn</span>
+        <span class="tg-kicker"><span class="pc-dot"></span>Đầu mục công việc</span>
         <button type="button" class="pc-name" data-edit-project="${esc(p.id)}">${esc(p.title)}</button>
+        ${p.description ? `<p class="pc-goal small muted">${esc(p.description)}</p>` : ''}
         <div class="chips">
           ${statusPill(liveStatus)}
           ${priorityPill(p.priority)}
           <span class="tag">${esc(groupName(p.groupId))}</span>
           ${p.due ? `<span class="tag">Hạn ${esc(fmtDate(p.due))}</span>` : ''}
-          ${prog.target ? `<span class="tag">Mục tiêu ${prog.target} sản phẩm</span>` : ''}
+          ${prog.target ? `<span class="tag">Mục tiêu ${prog.target} ${esc(unit)}</span>` : ''}
+          ${prog.marked ? `<span class="tag">${prog.marked} việc tính sản phẩm</span>` : ''}
+          ${linkedContents.length ? `<span class="tag">${linkedContents.length} nội dung</span>` : ''}
           ${prog.target && prog.reached ? '<span class="pill green">Đã đạt</span>' : ''}
-          ${prog.target && prog.total && !prog.hasMarks ? '<span class="pill amber">Chưa đánh dấu bước tính sản phẩm</span>' : ''}
+          ${!prog.target && !prog.total && !linkedContents.length ? '<span class="pill amber">Chưa có việc</span>' : ''}
           ${overdue ? `<span class="pill red">${overdue} quá hạn</span>` : ''}
           ${todayCount ? `<span class="pill blue">${todayCount} hôm nay</span>` : ''}
           ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
@@ -5410,37 +5267,42 @@ function projectCard(p) {
       </div>
       <div class="pc-progress">
         <strong>${pct}%</strong>
-        <span class="small muted">${prog.target
-          ? `${prog.outputs}/${prog.target} sản phẩm`
-          : `${prog.done}/${prog.total} việc nhỏ`}</span>
+        <span class="small muted">${progressText}</span>
         <div class="bar"><span style="width:${pct}%"></span></div>
-        <span class="small muted">${prog.target ? `${prog.done}/${prog.total} việc nhỏ · ` : ''}Dự kiến ${esc(fmtDur(prog.minutes))} · Thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
+        <span class="small muted">Dự kiến ${esc(fmtDur(prog.minutes))} · Thực tế ${actual ? esc(fmtDur(actual)) : '—'}</span>
       </div>
       <div class="pc-actions">
-        <button type="button" class="btn sm" data-add-child="${esc(p.id)}">+ Việc nhỏ</button>
+        <button type="button" class="btn sm" data-add-child="${esc(p.id)}">+ Việc</button>
         <button type="button" class="btn sm ghost" data-edit-project="${esc(p.id)}">Sửa</button>
-        <button type="button" class="btn sm ghost" data-del-project="${esc(p.id)}" title="Xoá công việc lớn">×</button>
+        <button type="button" class="btn sm soft-danger" data-del-project="${esc(p.id)}" title="Xoá đầu mục">Xoá</button>
       </div>
     </div>
     <div class="pc-children">
       ${items.length
-        ? items.map(t => childRow(t)).join('')
-        : '<p class="pc-empty small muted">Chưa có việc nhỏ. Thêm việc nhỏ bên dưới.</p>'}
+        ? items.map(t => childRow(t, false)).join('')
+        : `<p class="pc-empty small muted">${otherMonth ? `Không có việc nào trong tháng này. Còn ${otherMonth} việc ở tháng khác.` : 'Chưa có việc nào. Thêm việc thực hiện bên dưới.'}</p>`}
     </div>
+    ${linkedContents.length ? `<div class="chips" style="padding:0 14px 10px">
+      <span class="small muted" style="width:100%">Nội dung đã tạo từ đầu mục:</span>
+      ${linkedContents.map(c => `<a href="#" class="tag tag-link" data-open-content="${esc(c.id)}">${esc(c.title)} · ${esc(stageLabel(c.stage))}</a>`).join('')}
+    </div>` : ''}
     <div class="pc-foot">
-      <button type="button" class="btn sm ghost" data-add-child="${esc(p.id)}">+ Thêm việc nhỏ</button>
+      <button type="button" class="btn sm ghost" data-add-child="${esc(p.id)}">+ Thêm việc</button>
+      ${otherMonth ? `<span class="small muted">Còn ${otherMonth} việc ở tháng khác.</span>` : ''}
       <span class="spacer"></span>
-      <span class="small muted">${prog.total
-        ? (prog.target
-          ? 'Tích “Tính là 1 sản phẩm” ở bước đăng / giao sản phẩm để cộng vào mục tiêu.'
-          : 'Mở việc nhỏ để gắn link sản phẩm.')
-        : ''}</span>
+      <span class="small muted">${prog.legacy
+        ? 'Đầu mục đang đếm nội dung đã đăng. Chọn “Sản phẩm cuối” trong form thêm/sửa việc để chuyển sang cách tính mới.'
+        : prog.target
+          ? 'Chọn “Sản phẩm cuối” trong form thêm/sửa việc để cộng vào tiến độ đầu mục.'
+          : 'Đặt số lượng cần đạt để app tự tính % tiến độ.'}</span>
     </div>
   </section>`;
 }
 
 function unassignedHtml() {
-  const list = all('tasks').filter(t => !t.projectId && t.status !== 'cancelled');
+  const m = state.planMonth;
+  const list = all('tasks').filter(t => !t.projectId && t.status !== 'cancelled'
+    && (!t.due || String(t.due).slice(0, 7) === m));
   if (!list.length) return '';
   const sorted = [...list].sort((a, b) =>
     (a.status === 'done') - (b.status === 'done')
@@ -5452,7 +5314,7 @@ function unassignedHtml() {
       <h2>Việc chưa gắn đầu mục</h2>
       <span class="tag">${list.filter(t => t.status !== 'done').length} chưa xong</span>
       <div class="spacer"></div>
-      <span class="small muted">Sửa việc và chọn “Thuộc công việc lớn”.</span>
+      <span class="small muted">Sửa việc để chọn đầu mục hoặc đặt deadline.</span>
     </div>
     <div class="pc-children">${shown.map(t => childRow(t)).join('')}</div>
     ${sorted.length > shown.length ? `<div class="pc-foot"><span class="small muted">Còn ${sorted.length - shown.length} việc khác trong Danh sách.</span></div>` : ''}
@@ -5478,9 +5340,9 @@ function monthPlanHtml() {
       : '';
     return `${planToolbar()}
       <div class="card"><div class="card-body">
-        ${emptyState('Tháng này chưa có công việc lớn',
-          'Tạo đầu mục cho tháng, đặt số lượng sản phẩm cần đạt, rồi thêm các việc nhỏ bên trong.',
-          '<button class="btn primary" data-new-project>+ Công việc lớn</button>')}
+        ${emptyState('Tháng này chưa có đầu mục',
+          'Tạo đầu mục cho tháng — ví dụ 30 video TikTok, sự kiện, hỗ trợ đồng nghiệp — rồi thêm các việc thực hiện bên trong.',
+          '<button class="btn primary" data-new-project>+ Đầu mục</button>')}
         ${jump}
       </div></div>
       ${unassignedHtml()}`;
@@ -5559,21 +5421,18 @@ function refresh(view) {
 async function removeProject(p) {
   const kids = all('tasks').filter(t => t.projectId === p.id);
   const ok = await confirmDialog({
-    title: 'Xoá công việc lớn',
+    title: 'Xoá đầu mục',
     message: `Xoá "${p.title}"?`,
     details: kids.length
-      ? `${kids.length} việc nhỏ bên trong và thời gian đã ghi nhận cũng sẽ bị xoá.`
-      : 'Công việc lớn này chưa có việc nhỏ.',
+      ? `${kids.length} việc bên trong và thời gian đã ghi nhận cũng sẽ bị xoá.`
+      : 'Đầu mục này chưa có việc nào.',
     okLabel: 'Xoá', danger: true,
   });
   if (!ok) return;
-  for (const t of kids) {
-    if (timer.activeTimer()?.taskId === t.id) await timer.discard();
-    await remove('tasks', t.id);
-  }
+  for (const t of kids) await remove('tasks', t.id);
   await remove('projects', p.id);
   if (state.project === p.id) state.project = '';
-  toast('Đã xoá công việc lớn.', 'success');
+  toast('Đã xoá đầu mục.', 'success');
 }
 
 function bind(view) {
@@ -5618,7 +5477,15 @@ function bind(view) {
       openForm('project', { ...blank('project'), month: state.planMonth });
       return;
     }
-    if (e.target.closest('[data-new-task]')) { openForm('task', null); return; }
+    if (e.target.closest('[data-new-task]')) {
+      if (state.planMode === 'month') {
+        const due = state.planMonth === today().slice(0, 7) ? today() : `${state.planMonth}-01`;
+        openForm('task', { ...blank('task'), due });
+      } else {
+        openForm('task', null);
+      }
+      return;
+    }
 
     const editProject = e.target.closest('[data-edit-project]');
     if (editProject) {
@@ -5636,8 +5503,11 @@ function bind(view) {
     if (addChild) {
       const p = find('projects', addChild.dataset.addChild);
       if (p) {
+        const due = state.planMode === 'month'
+          ? (state.planMonth === today().slice(0, 7) ? today() : `${state.planMonth}-01`)
+          : '';
         openForm('task', {
-          ...blank('task'), projectId: p.id, groupId: p.groupId,
+          ...blank('task'), projectId: p.id, groupId: p.groupId, due,
           priority: p.priority, productLink: p.productLink || '',
         });
       }
@@ -5670,14 +5540,19 @@ function bind(view) {
     const edit = e.target.closest('[data-edit]');
     if (edit) { e.preventDefault(); const t = find('tasks', edit.dataset.edit); if (t) openForm('task', t); return; }
 
+    const openContent = e.target.closest('[data-open-content]');
+    if (openContent) {
+      e.preventDefault();
+      const c = find('contents', openContent.dataset.openContent);
+      if (c) __M["js/views/content.js"].openContentForm(c);
+      return;
+    }
+
     const note = e.target.closest('[data-note]');
     if (note) { const t = find('tasks', note.dataset.note); if (t) quickNote(t); return; }
 
     const tomorrow = e.target.closest('[data-tomorrow]');
     if (tomorrow) { const t = find('tasks', tomorrow.dataset.tomorrow); if (t) await moveToTomorrow(t); return; }
-
-    const timerBtn = e.target.closest('[data-timer]');
-    if (timerBtn) { const t = find('tasks', timerBtn.closest('[data-id]').dataset.id); if (t) await toggleTimer(t); return; }
 
     const del = e.target.closest('[data-delete]');
     if (del) { const t = find('tasks', del.closest('[data-id]').dataset.id); if (t) await deleteTask(t); return; }
@@ -5704,15 +5579,18 @@ function bind(view) {
       refresh(view);
       return;
     }
-    if (e.target.matches('[data-child-done]')) {
+    if (e.target.matches('[data-quick-status]')) {
       const holder = e.target.closest('.pc-child');
       const t = holder ? find('tasks', holder.dataset.id) : null;
       if (!t) return;
-      if (e.target.checked) {
+      const next = e.target.value;
+      if (next === t.status) return;
+      if (next === 'done') {
         const ok = await completeTask(t);
-        if (!ok) e.target.checked = false;
+        if (!ok) e.target.value = t.status;
       } else {
-        await reopenTask(t);
+        await setTaskStatus(t, next);
+        toast(`Đã chuyển sang “${statusLabel(next)}”.`, 'success');
       }
       return;
     }
@@ -5798,20 +5676,24 @@ return { focusTask, render };
 
 // ---- js/views/content.js ----
 __M["js/views/content.js"] = (() => {
-// Phân hệ Sản xuất content: danh sách, kanban theo giai đoạn, đo hiệu quả.
+// Phân hệ Sản xuất content: lịch sản xuất theo nhịp thời gian, danh sách nội dung, kanban, hiệu quả.
 const { all, find, save, remove } = __M["js/store.js"];
-const { today, fmtDate, esc, norm, diffDays, searchMatch } = __M["js/util.js"];
-const { contentRisk, latestMetrics, metricsRate } = __M["js/logic.js"];
-const { STAGES, stageLabel, PLATFORMS, FORMATS, GOALS } = __M["js/schema.js"];
-const { openForm, openModal, toast, emptyState, confirmDialog, priorityPill, pill } = __M["js/ui.js"];
-const { openContentTasks, backwardPlan, deleteRecord } = __M["js/actions.js"];
+const { today, addDays, startOfWeek, fmtDate, fmtDur, esc, norm, diffDays, searchMatch, safeUrl } = __M["js/util.js"];
+const { contentRisk, latestMetrics, metricsRate, isOverdue, overdueDays, sessionMinutes } = __M["js/logic.js"];
+const { STAGES, stageLabel, TASK_STATUS, statusLabel, PLATFORMS, FORMATS, GOALS, blank } = __M["js/schema.js"];
+const { openForm, openModal, toast, emptyState, confirmDialog, priorityPill, statusPill, pill } = __M["js/ui.js"];
+const { backwardPlan, deleteRecord, completeTask, setTaskStatus, deleteTask } = __M["js/actions.js"];
+const projectsApi = __M["js/projects.js"];
 
-const state = { tab: 'list', q: '', stage: '', platform: '', format: '', goal: '', product: '', page: 1 };
+const state = {
+  tab: 'work', q: '', stage: '', platform: '', format: '', goal: '', product: '', page: 1,
+  workMonth: today().slice(0, 7),
+};
 const PAGE = 30;
 
 function applyParams(p) {
   if (p.tab) state.tab = p.tab;
-  if (p.stage) state.stage = p.stage;
+  if (p.stage) { state.tab = 'list'; state.stage = p.stage; }
   if (p.q) state.q = p.q;
 }
 
@@ -5923,8 +5805,7 @@ function openMetricForm(c) {
 
 function openContentForm(c) {
   const extras = c ? [
-    { label: 'Nhiệm vụ', onClick: close => { close(); openContentTasks(c); } },
-    { label: 'Kế hoạch ngược', onClick: close => { close(); backwardPlan(c); } },
+    { label: 'Mốc sản xuất', onClick: close => { close(); backwardPlan(c); } },
     { label: 'Số liệu', onClick: close => { close(); openMetrics(c); } },
     { label: 'Lịch sử', onClick: close => { close(); openHistory(c); } },
   ] : [];
@@ -5982,16 +5863,16 @@ function tableHtml() {
       <thead><tr><th>Nội dung</th><th>Nền tảng</th><th>Giai đoạn</th><th>Ưu tiên</th><th>Ngày đăng</th><th>Cảnh báo</th><th></th></tr></thead>
       <tbody>${slice.map(c => {
         const risks = riskFor(c);
+        const pj = c.projectId ? find('projects', c.projectId) : null;
         return `<tr class="clickable" data-id="${esc(c.id)}">
           <td><div class="title">${esc(c.title)}</div>
-            <div class="small muted">${esc(c.product || c.brand || '—')}${c.code ? ' · ' + esc(c.code) : ''}</div></td>
+            <div class="small muted">${esc(c.product || c.brand || '—')}${c.code ? ' · ' + esc(c.code) : ''}${pj ? ' · ' + esc(pj.title) : ''}</div></td>
           <td>${esc(c.platform || '—')}<div class="small muted">${esc(c.format || '')}</div></td>
           <td>${pill(stageLabel(c.stage), ['published', 'completed'].includes(c.stage) ? 'green' : c.stage === 'cancelled' ? '' : 'blue')}</td>
           <td>${priorityPill(c.priority)}</td>
           <td>${c.actualPublish ? esc(fmtDate(c.actualPublish)) : c.planPublish ? esc(fmtDate(c.planPublish)) : '<span class="muted">—</span>'}</td>
           <td>${risks.length ? `<span class="pill ${risks[0].tone}">${esc(risks[0].text)}</span>` : '<span class="muted">—</span>'}</td>
           <td style="white-space:nowrap">
-            <button class="btn sm" data-tasks="${esc(c.id)}">Nhiệm vụ</button>
             <button class="btn sm ghost" data-delete="${esc(c.id)}">×</button>
           </td>
         </tr>`;
@@ -6085,7 +5966,130 @@ function metricsHtml() {
     </div>`;
 }
 
+// ---------- việc sản xuất theo đầu mục ----------
+function workMonthLabel(m) {
+  const [y, mo] = String(m).split('-');
+  return `Tháng ${Number(mo)}/${y}`;
+}
+
+function workTaskInMonth(t) {
+  const due = String(t.due || '').slice(0, 7);
+  if (due) return due === state.workMonth;
+  if (!t.projectId) return true; // việc chưa gắn đầu mục luôn hiện để còn xếp lịch
+  const p = find('projects', t.projectId);
+  if (!p) return true;
+  return !p.month || String(p.month).slice(0, 7) === state.workMonth;
+}
+
+function workMonthTasks() {
+  return all('tasks').filter(workTaskInMonth);
+}
+
+// Sản xuất content nhìn theo nhịp thời gian: việc gấp, hôm nay, tuần này, sắp tới.
+function workProductionSections(tasks) {
+  const ref = today();
+  const weekEnd = addDays(startOfWeek(ref), 6);
+  const dateOf = t => String(t.due || '').slice(0, 10);
+  const open = t => t.status !== 'done' && t.status !== 'cancelled';
+  const sections = [
+    { key: 'overdue', label: 'Quá hạn', tone: 'red', items: tasks.filter(t => open(t) && dateOf(t) && dateOf(t) < ref) },
+    { key: 'today', label: 'Hôm nay', tone: 'today', items: tasks.filter(t => open(t) && dateOf(t) === ref) },
+    { key: 'week', label: 'Tuần này', tone: 'week', items: tasks.filter(t => open(t) && dateOf(t) > ref && dateOf(t) <= weekEnd) },
+    { key: 'later', label: 'Sắp tới', tone: 'later', items: tasks.filter(t => open(t) && dateOf(t) > weekEnd) },
+    { key: 'unscheduled', label: 'Chưa xếp ngày', tone: 'todo', items: tasks.filter(t => open(t) && !dateOf(t)) },
+    { key: 'done', label: 'Đã xong', tone: 'done', items: tasks.filter(t => t.status === 'done') },
+    { key: 'cancelled', label: 'Đã hủy', tone: 'cancelled', items: tasks.filter(t => t.status === 'cancelled') },
+  ];
+  for (const s of sections) {
+    s.items.sort((a, b) =>
+      String(a.due || '9999-99-99').localeCompare(String(b.due || '9999-99-99'))
+      || String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+  }
+  return sections.filter(s => s.items.length);
+}
+
+function workRow(t) {
+  const actual = sessionMinutes(all('sessions'), t.id);
+  const due = String(t.due || '').slice(0, 10);
+  const product = safeUrl(t.productLink);
+  const qty = projectsApi.qtyOf(t);
+  const project = t.projectId ? find('projects', t.projectId) : null;
+  const color = projectsApi.colorOf(t.projectId).c;
+  return `<div class="pc-child prod-row${t.status === 'done' ? ' is-done' : ''}${t.status === 'cancelled' ? ' is-cancelled' : ''}" data-id="${esc(t.id)}" style="--pc-color:${color}">
+    <div class="pc-child-main">
+      <button type="button" class="pc-child-title" data-work-edit="${esc(t.id)}">${esc(t.title)}</button>
+      <div class="pc-child-meta">
+        ${project
+          ? `<span class="tag"><span class="pc-dot"></span>${esc(project.title)}</span>`
+          : '<span class="tag">chưa gắn đầu mục</span>'}
+        ${due
+          ? `<span class="tag${isOverdue(t) ? ' tag-red' : ''}">${esc(fmtDate(due))}${isOverdue(t) ? ` · trễ ${overdueDays(t)}n` : ''}</span>`
+          : '<span class="tag">chưa xếp ngày</span>'}
+        <span class="tag">dự kiến ${esc(fmtDur(t.estimatedMin))}</span>
+        ${actual ? `<span class="tag">thực tế ${esc(fmtDur(actual))}</span>` : ''}
+        ${t.isOutput ? `<span class="tag tag-out">sản phẩm cuối${qty > 1 ? ` ×${qty}` : ''}</span>` : ''}
+        ${product ? `<a class="tag tag-link" href="${esc(product)}" target="_blank" rel="noopener">Link sản phẩm</a>` : ''}
+      </div>
+    </div>
+    <div class="pc-child-actions">
+      <select class="status-quick st-${esc(t.status)}" data-work-status aria-label="Trạng thái công việc" title="Chuyển trạng thái nhanh">
+        ${TASK_STATUS.map(s => `<option value="${s.v}"${s.v === t.status ? ' selected' : ''}>${s.l}</option>`).join('')}
+      </select>
+      <button type="button" class="btn sm soft-danger" data-work-del title="Xoá việc">Xoá</button>
+    </div>
+  </div>`;
+}
+
+function workSectionHtml(section) {
+  const minutes = section.items.reduce((sum, t) => sum + (Number(t.estimatedMin) || 0), 0);
+  const outputs = section.items.filter(t => t.isOutput && t.status === 'done')
+    .reduce((sum, t) => sum + projectsApi.qtyOf(t), 0);
+  return `<section class="card prod-sec" data-tone="${section.tone}" data-section="${section.key}">
+    <div class="prod-head">
+      <span class="prod-mark" aria-hidden="true"></span>
+      <h3>${esc(section.label)}</h3>
+      <span class="tag">${section.items.length} việc</span>
+      ${outputs ? `<span class="tag tag-out">${outputs} sản phẩm cuối</span>` : ''}
+      <span class="spacer"></span>
+      <span class="small muted">${minutes ? `Dự kiến ${esc(fmtDur(minutes))}` : ''}</span>
+    </div>
+    <div class="pc-children">${section.items.map(workRow).join('')}</div>
+  </section>`;
+}
+
+function workHtml() {
+  const tasks = workMonthTasks();
+  const sections = workProductionSections(tasks);
+  const done = tasks.filter(t => t.status === 'done').length;
+  const overdue = tasks.filter(t => t.status !== 'done' && t.status !== 'cancelled' && isOverdue(t)).length;
+  const todayCount = tasks.filter(t => t.status !== 'done' && t.status !== 'cancelled'
+    && String(t.due || '').slice(0, 10) === today()).length;
+  const outputs = tasks.filter(t => t.isOutput && t.status === 'done')
+    .reduce((sum, t) => sum + projectsApi.qtyOf(t), 0);
+  const bar = `<div class="plan-bar">
+    <div class="plan-nav">
+      <input type="month" data-work-month value="${esc(state.workMonth)}" aria-label="Chọn tháng sản xuất">
+      <button type="button" class="btn sm" data-work-today>Tháng này</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="tag">${tasks.length} việc</span>
+    <span class="tag">${done}/${tasks.length} xong</span>
+    ${todayCount ? `<span class="tag tag-today">${todayCount} hôm nay</span>` : ''}
+    ${overdue ? `<span class="tag tag-red">${overdue} quá hạn</span>` : ''}
+    ${outputs ? `<span class="tag tag-out">${outputs} sản phẩm cuối</span>` : ''}
+  </div>`;
+  if (!tasks.length) {
+    return `${bar}<div class="card"><div class="card-body">
+      ${emptyState('Chưa có việc trong lịch sản xuất',
+        'Tạo đầu mục trong tab Công việc, rồi thêm việc thực hiện ở đây: lên ý tưởng, viết kịch bản, brief thiết kế, quay, dựng, hỗ trợ đồng nghiệp…',
+        '<button class="btn primary" data-new-work>+ Việc</button><button class="btn" data-new-heading>+ Đầu mục</button>')}
+    </div></div>`;
+  }
+  return `${bar}<div class="prod-board">${sections.map(workSectionHtml).join('')}</div>`;
+}
+
 function body(view) {
+  if (state.tab === 'work') return workHtml();
   if (state.tab === 'kanban') return kanbanHtml();
   if (state.tab === 'metrics') return metricsHtml();
   return tableHtml();
@@ -6093,16 +6097,20 @@ function body(view) {
 
 function shell(view) {
   const products = [...new Set(all('contents').map(c => c.product).filter(Boolean))].sort();
+  const work = state.tab === 'work';
   view.innerHTML = `
     <div class="row" style="margin-bottom:14px">
       <div class="tabs" style="margin:0;border:0;flex:1">
-        <button data-tab="list" class="${state.tab === 'list' ? 'active' : ''}">Danh sách</button>
-        <button data-tab="kanban" class="${state.tab === 'kanban' ? 'active' : ''}">Kanban sản xuất</button>
+        <button data-tab="work" class="${work ? 'active' : ''}">Lịch sản xuất</button>
+        <button data-tab="list" class="${state.tab === 'list' ? 'active' : ''}">Nội dung</button>
+        <button data-tab="kanban" class="${state.tab === 'kanban' ? 'active' : ''}">Kanban</button>
         <button data-tab="metrics" class="${state.tab === 'metrics' ? 'active' : ''}">Hiệu quả</button>
       </div>
-      <button class="btn primary" data-new>+ Nội dung</button>
+      ${work
+        ? '<button class="btn primary" data-new-work>+ Việc</button>'
+        : '<button class="btn primary" data-new>+ Nội dung</button>'}
     </div>
-    ${filtersHtml(products)}
+    ${work ? '' : filtersHtml(products)}
     <div id="list-region">${body(view)}</div>`;
 }
 
@@ -6123,6 +6131,24 @@ function bind(view) {
       return;
     }
     if (e.target.closest('[data-new]')) { openContentForm(null); return; }
+    if (e.target.closest('[data-new-work]')) {
+      const due = state.workMonth === today().slice(0, 7) ? today() : `${state.workMonth}-01`;
+      openForm('task', { ...blank('task'), due, groupId: 'content' });
+      return;
+    }
+    if (e.target.closest('[data-new-heading]')) {
+      openForm('project', { ...blank('project'), month: state.workMonth });
+      return;
+    }
+    const workEdit = e.target.closest('[data-work-edit]');
+    if (workEdit) { const t = find('tasks', workEdit.dataset.workEdit); if (t) openForm('task', t); return; }
+    const workDel = e.target.closest('[data-work-del]');
+    if (workDel) { const t = find('tasks', workDel.closest('.pc-child')?.dataset.id); if (t) await deleteTask(t); return; }
+    if (e.target.closest('[data-work-today]')) {
+      state.workMonth = today().slice(0, 7);
+      refresh(view);
+      return;
+    }
     if (e.target.closest('[data-clear-filters]')) {
       Object.assign(state, { q: '', stage: '', platform: '', format: '', goal: '', product: '', page: 1 });
       shell(view);
@@ -6133,9 +6159,6 @@ function bind(view) {
 
     const del = e.target.closest('[data-delete]');
     if (del) { const c = find('contents', del.dataset.delete); if (c) await deleteRecord('contents', c, 'nội dung'); return; }
-
-    const tasksBtn = e.target.closest('[data-tasks]');
-    if (tasksBtn) { const c = find('contents', tasksBtn.dataset.tasks); if (c) openContentTasks(c); return; }
 
     const metricsBtn = e.target.closest('[data-metrics]');
     if (metricsBtn) { const c = find('contents', metricsBtn.dataset.metrics); if (c) openMetrics(c); return; }
@@ -6148,6 +6171,26 @@ function bind(view) {
   });
 
   view.addEventListener('change', async e => {
+    const workMonth = e.target.closest('[data-work-month]');
+    if (workMonth) {
+      if (workMonth.value) state.workMonth = workMonth.value;
+      refresh(view);
+      return;
+    }
+    if (e.target.matches('[data-work-status]')) {
+      const t = find('tasks', e.target.closest('.pc-child')?.dataset.id);
+      if (!t) return;
+      const next = e.target.value;
+      if (next === t.status) return;
+      if (next === 'done') {
+        const ok = await completeTask(t);
+        if (!ok) e.target.value = t.status;
+      } else {
+        await setTaskStatus(t, next);
+        toast(`Đã chuyển sang “${statusLabel(next)}”.`, 'success');
+      }
+      return;
+    }
     const filter = e.target.closest('[data-filter]');
     if (filter) {
       state[filter.dataset.filter] = filter.value;
@@ -6381,8 +6424,8 @@ function chooseBackwardPlan() {
   const contents = all('contents').filter(c => !['completed', 'cancelled'].includes(c.stage));
   if (!contents.length) { toast('Chưa có nội dung nào để lập kế hoạch.', 'error'); return; }
   openModal({
-    title: 'Lập kế hoạch ngược từ ngày đăng',
-    content: `<p>Chọn nội dung. Hệ thống gợi ý các mốc trước ngày đăng và tạo nhiệm vụ tương ứng.</p>
+    title: 'Mốc sản xuất từ ngày đăng',
+    content: `<p>Chọn nội dung. Hệ thống gợi ý các mốc trước ngày đăng và lưu vào hồ sơ nội dung.</p>
       <div class="field"><label for="bp-content">Nội dung</label>
         <select id="bp-content">${contents.map(c => `<option value="${esc(c.id)}">${esc(c.title)}${c.planPublish ? ' — đăng ' + fmtDate(c.planPublish) : ''}</option>`).join('')}</select>
       </div>
@@ -6416,7 +6459,7 @@ function shell(view) {
         <option value="day"${state.view === 'day' ? ' selected' : ''}>Ngày</option>
         <option value="agenda"${state.view === 'agenda' ? ' selected' : ''}>Danh sách sắp tới</option>
       </select>
-      <button class="btn sm" data-bp>Lập kế hoạch ngược</button>
+      <button class="btn sm" data-bp>Mốc sản xuất</button>
       <button class="btn sm primary" data-new>+ Lịch</button>
     </div>
     <details class="section">
@@ -6536,7 +6579,7 @@ function ideasHtml() {
   const items = all('ideas').filter(ideaMatches).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   if (!items.length) {
     return emptyState('Chưa có ý tưởng', 'Ghi lại ý tưởng ngay khi xuất hiện để không quên.',
-      '<button class="btn primary" data-new-idea>+ Ý tưởng</button>');
+      '<button class="btn primary" data-new>+ Ý tưởng</button>');
   }
   return `<div class="grid cols-3">${items.map(i => {
     const linked = all('contents').filter(c => c.ideaId === i.id).length;
@@ -6565,7 +6608,7 @@ function resourcesHtml() {
   if (!items.length) {
     return emptyState(`Chưa có ${state.tab === 'resources' ? 'tài nguyên' : 'mục nào'}`,
       'Lưu hook, cấu trúc, kịch bản mẫu hoặc đường dẫn tài liệu để tái sử dụng.',
-      '<button class="btn primary" data-new-res>+ Thêm mới</button>');
+      '<button class="btn primary" data-new>+ Thêm mới</button>');
   }
   return `<div class="card"><div class="table-wrap"><table class="table">
     <thead><tr><th>Tiêu đề</th><th>Loại</th><th>Thương hiệu</th><th>Liên kết</th><th>Ngày thêm</th><th></th></tr></thead>
@@ -6718,7 +6761,7 @@ function totalMinutes() {
 function eventsHtml() {
   const items = all('events').filter(e => matchesQ(e, e.type)).sort((a, b) => String(a.start || '').localeCompare(String(b.start || '')));
   if (!items.length) return emptyState('Chưa có sự kiện', 'Thêm hội nghị, triển lãm, buổi quay hoặc họp nội bộ.',
-    '<button class="btn primary" data-new-event>+ Sự kiện</button>');
+    '<button class="btn primary" data-new>+ Sự kiện</button>');
 
   const upcoming = items.filter(e => !e.start || String(e.start).slice(0, 10) >= today());
   const past = items.filter(e => e.start && String(e.start).slice(0, 10) < today()).reverse();
@@ -6780,7 +6823,7 @@ function supportHtml() {
             <button class="btn sm ghost" data-del-task="${esc(t.id)}">×</button></td>
       </tr>`).join('')}</tbody></table></div></div>`
       : emptyState('Chưa có nhiệm vụ hỗ trợ', 'Ghi lại việc hỗ trợ đồng nghiệp để báo cáo đúng khối lượng công việc.',
-        '<button class="btn primary" data-new-support>+ Việc hỗ trợ</button>')}
+        '<button class="btn primary" data-new>+ Việc hỗ trợ</button>')}
     <p class="small muted" style="margin-top:10px">Tỷ trọng chỉ tính trên thời gian đã ghi nhận, không phải toàn bộ thời gian làm việc thực tế.</p>`;
 }
 
@@ -6885,10 +6928,10 @@ return { render };
 
 // ---- js/views/reports.js ----
 __M["js/views/reports.js"] = (() => {
-// Phân hệ Báo cáo: công việc, sản xuất, thời gian, hiệu quả, tổng kết kỳ, xuất CSV.
-const { all, find, settings, groupName } = __M["js/store.js"];
-const { today, fmtDate, fmtDur, esc, toCSV, download, slugTime, addDays } = __M["js/util.js"];
-const { rangeFor, workStats, timeStats, contentStats, inRange, metricsRate, publishDate, sessionMinutes, scopeTasks } = __M["js/logic.js"];
+// Phân hệ Báo cáo: công việc, sản xuất, thời gian, hiệu quả, tổng kết kỳ.
+const { all, settings, groupName } = __M["js/store.js"];
+const { today, fmtDate, fmtDur, esc, addDays } = __M["js/util.js"];
+const { rangeFor, workStats, timeStats, contentStats, inRange, metricsRate } = __M["js/logic.js"];
 const { emptyState } = __M["js/ui.js"];
 
 const state = { period: 'week', ref: today(), from: '', to: '', custom: false };
@@ -6905,16 +6948,10 @@ function range() {
   return rangeFor(state.period, state.ref, settings().weekStart);
 }
 
-const csv = (name, headers, rows) => {
-  download(`${name}-${slugTime()}.csv`, toCSV(headers, rows), 'text/csv');
-  return rows.length;
-};
-
 function workSection(from, to, stats) {
   const pct = stats.ontimeRate;
   return `<div class="card" style="margin-bottom:14px">
-    <div class="card-head"><h2>Báo cáo công việc</h2><div class="spacer"></div>
-      <button class="btn sm" data-csv="tasks">Xuất CSV</button></div>
+    <div class="card-head"><h2>Báo cáo công việc</h2></div>
     <div class="card-body">
       <div class="grid cols-5" style="margin-bottom:6px">
         ${[
@@ -6946,8 +6983,7 @@ function workSection(from, to, stats) {
 
 function contentSection(from, to, cs, ideasCount) {
   return `<div class="card" style="margin-bottom:14px">
-    <div class="card-head"><h2>Báo cáo sản xuất content</h2><div class="spacer"></div>
-      <button class="btn sm" data-csv="contents">Xuất CSV</button></div>
+    <div class="card-head"><h2>Báo cáo sản xuất content</h2></div>
     <div class="card-body">
       <div class="grid cols-5" style="margin-bottom:10px">
         ${[
@@ -6986,8 +7022,7 @@ function timeSection(ts, tasks) {
   const groups = ts.byGroup.map(([g, m]) => [groupName(g), m]);
   const max = Math.max(1, ...groups.map(([, m]) => m));
   return `<div class="card" style="margin-bottom:14px">
-    <div class="card-head"><h2>Báo cáo thời gian</h2><div class="spacer"></div>
-      <button class="btn sm" data-csv="time">Xuất CSV</button></div>
+    <div class="card-head"><h2>Báo cáo thời gian</h2></div>
     <div class="card-body">
       <div class="grid cols-3" style="margin-bottom:10px">
         <div class="card stat"><div class="label">Tổng đã ghi nhận</div><div class="value" style="font-size:22px">${esc(fmtDur(ts.total))}</div><div class="sub">${ts.count} phiên</div></div>
@@ -7027,8 +7062,7 @@ function performanceSection(from, to) {
     byPlatform[k] = a;
   }
   return `<div class="card" style="margin-bottom:14px">
-    <div class="card-head"><h2>Hiệu quả nội dung trong kỳ</h2><div class="spacer"></div>
-      <button class="btn sm" data-csv="metrics">Xuất CSV</button></div>
+    <div class="card-head"><h2>Hiệu quả nội dung trong kỳ</h2></div>
     <div class="table-wrap"><table class="table">
       <thead><tr><th>Nội dung</th><th>Nền tảng</th><th class="num">Ngày đo</th><th class="num">Xem</th><th class="num">Tương tác</th><th class="num">Tỷ lệ</th></tr></thead>
       <tbody>${rows.map(({ m, c }) => `<tr><td>${esc(c.title)}</td><td>${esc(c.platform || '—')}</td>
@@ -7063,8 +7097,7 @@ function summarySection(stats, cs, ts) {
   if (!suggestions.length) suggestions.push('Không có dấu hiệu bất thường trong kỳ. Tiếp tục ghi nhận thời gian để báo cáo chính xác hơn.');
 
   return `<div class="card" style="margin-bottom:14px">
-    <div class="card-head"><h2>Tổng kết & đề xuất</h2><div class="spacer"></div>
-      <button class="btn sm" data-csv="summary">Xuất CSV</button></div>
+    <div class="card-head"><h2>Tổng kết & đề xuất</h2></div>
     <div class="card-body">
       <p><b>Đã hoàn thành ${stats.done} công việc, đăng ${cs.published} nội dung, ghi nhận ${esc(fmtDur(ts.total))}.</b></p>
       <p class="small">Còn ${stats.waiting + stats.onhold} việc đang chờ/tạm hoãn và ${stats.overdue} việc quá hạn.</p>
@@ -7117,16 +7150,6 @@ function render(view, params = {}) {
     ${timeSection(ts, tasks)}
     ${performanceSection(from, to)}
     ${summarySection(stats, cs, ts)}
-
-    <div class="card"><div class="card-head"><h2>Xuất dữ liệu</h2></div><div class="card-body">
-      <div class="row">
-        <button class="btn" data-csv="tasks">Công việc (CSV)</button>
-        <button class="btn" data-csv="contents">Nội dung (CSV)</button>
-        <button class="btn" data-csv="time">Phiên thời gian (CSV)</button>
-        <button class="btn" data-csv="metrics">Số liệu hiệu quả (CSV)</button>
-      </div>
-      <p class="small muted" style="margin:8px 0 0">File CSV dùng UTF-8 kèm BOM để Excel hiển thị đúng tiếng Việt.</p>
-    </div></div>
   `;
 
   view.querySelectorAll('[data-period]').forEach(btn => btn.addEventListener('click', () => {
@@ -7156,53 +7179,6 @@ function render(view, params = {}) {
     render(view);
   });
   view.querySelector('[data-clear-range]')?.addEventListener('click', () => { state.custom = false; render(view); });
-
-  view.querySelectorAll('[data-csv]').forEach(btn => btn.addEventListener('click', () => {
-    const kind = btn.dataset.csv;
-    if (kind === 'tasks') {
-      const rows = scopeTasks(tasks, from, to).map(t => [t.title, groupName(t.groupId), t.priority, t.status, fmtDate(t.due), fmtDate(t.doneAt), t.estimatedMin || 0, sessionMinutes(sessions, t.id), find('projects', t.projectId)?.title || t.project || '', (t.tags || []).join('; ')]);
-      csv('cong-viec', ['Tên', 'Nhóm', 'Ưu tiên', 'Trạng thái', 'Deadline', 'Ngày hoàn thành', 'Dự kiến (phút)', 'Thực tế (phút)', 'Công việc lớn', 'Nhãn'], rows);
-    } else if (kind === 'contents') {
-      const rows = contents.filter(c => inRange(publishDate(c), from, to) || inRange(c.planPublish, from, to))
-        .map(c => [c.title, c.platform, c.format, c.goal, c.stage, fmtDate(c.planPublish), fmtDate(c.actualPublish), c.publishLink || '', c.product || '', c.brand || '']);
-      csv('noi-dung', ['Tên', 'Nền tảng', 'Định dạng', 'Mục tiêu', 'Giai đoạn', 'Đăng dự kiến', 'Đăng thực tế', 'Link', 'Sản phẩm', 'Thương hiệu'], rows);
-    } else if (kind === 'time') {
-      const rows = sessions.filter(s => inRange(s.date || s.startedAt, from, to)).map(s => {
-        const t = tasks.find(x => x.id === s.taskId);
-        return [fmtDate(s.date), t?.title || '', s.minutes || 0, s.note || '', s.manual ? 'Nhập tay' : 'Bộ đếm', s.startedAt || '', s.endedAt || ''];
-      });
-      csv('thoi-gian', ['Ngày', 'Công việc', 'Số phút', 'Ghi chú', 'Nguồn', 'Bắt đầu', 'Kết thúc'], rows);
-    } else if (kind === 'metrics') {
-      const contentsMap = new Map(contents.map(c => [c.id, c]));
-      const rows = all('metrics').filter(m => inRange(m.date, from, to)).map(m => {
-        const c = contentsMap.get(m.contentId);
-        return [c?.title || '(đã xoá)', c?.platform || m.platform || '', fmtDate(m.date), m.views || 0, m.reach || 0, m.likes || 0,
-          m.comments || 0, m.shares || 0, m.saves || 0, m.completionRate || 0, m.clicks || 0, m.conversions || 0, m.notes || ''];
-      });
-      csv('hieu-qua', ['Nội dung', 'Nền tảng', 'Ngày đo', 'Xem', 'Tiếp cận', 'Thích', 'Bình luận', 'Chia sẻ', 'Lưu', 'Xem hết (%)', 'Nhấp', 'Chuyển đổi', 'Ghi chú'], rows);
-    } else if (kind === 'summary') {
-      const rows = [
-        ['Kỳ báo cáo', label],
-        ['Tổng công việc', stats.total],
-        ['Hoàn thành', stats.done],
-        ['Đang làm', stats.doing],
-        ['Chờ / tạm hoãn', stats.waiting + stats.onhold],
-        ['Quá hạn hiện tại', stats.overdue],
-        ['Đúng hạn (%)', stats.ontimeRate === null ? '' : stats.ontimeRate.toFixed(1)],
-        ['Mẫu số đúng hạn', stats.ontimeBase],
-        ['Việc phát sinh', stats.adhoc],
-        ['Đã huỷ', stats.cancelled],
-        ['Ý tưởng ghi nhận', ideasCount],
-        ['Kịch bản', cs.scripts],
-        ['Đã quay', cs.shot],
-        ['Đã dựng', cs.edited],
-        ['Đã xuất bản', cs.published],
-        ['Đăng trễ', cs.late],
-        ['Thời gian ghi nhận (phút)', ts.total],
-      ];
-      csv('tong-ket', ['Chỉ số', 'Giá trị'], rows);
-    }
-  }));
 }
 
 return { render };
@@ -7210,22 +7186,9 @@ return { render };
 
 // ---- js/backup.js ----
 __M["js/backup.js"] = (() => {
-// Xuất báo cáo nhanh và xoá dữ liệu.
-const { download, slugTime } = __M["js/util.js"];
+// Xoá dữ liệu.
 const { clearAll } = __M["js/store.js"];
 const { toast, confirmDialog } = __M["js/ui.js"];
-
-function exportTodaySummary(rows, headers) {
-  // rows/headers do module báo cáo cung cấp
-  download(`bao-cao-${slugTime()}.csv`, toCsv(headers, rows), 'text/csv');
-}
-
-function toCsv(headers, rows) {
-  return '\ufeff' + [headers, ...rows].map(r => r.map(v => {
-    const s = String(v ?? '');
-    return /[",\n\r;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  }).join(',')).join('\r\n');
-}
 
 async function wipeAll() {
   const ok = await confirmDialog({
@@ -7245,7 +7208,7 @@ async function wipeAll() {
   toast('Đã xoá toàn bộ dữ liệu.', 'success');
 }
 
-return { exportTodaySummary, wipeAll };
+return { wipeAll };
 })();
 
 // ---- js/views/settings.js ----
@@ -7486,7 +7449,7 @@ function render(view) {
         <div class="card-head"><h2>Đồng bộ & dữ liệu</h2></div>
         <div class="card-body" id="cloud-card">${cloudCardHtml()}</div>
         <div class="card-body" style="border-top:1px solid var(--line)">
-          <p class="small muted" style="margin:0 0 10px">${counts.tasks} công việc · ${counts.projects} công việc lớn · ${counts.contents} nội dung · ${counts.ideas} ý tưởng · ${counts.events} sự kiện · ${counts.sessions} phiên · ${counts.metrics} lần đo.</p>
+          <p class="small muted" style="margin:0 0 10px">${counts.tasks} công việc · ${counts.projects} đầu mục · ${counts.contents} nội dung · ${counts.ideas} ý tưởng · ${counts.events} sự kiện · ${counts.sessions} phiên · ${counts.metrics} lần đo.</p>
           <div class="row">
             <button type="button" class="btn sm" data-integrity>Kiểm tra dữ liệu</button>
             ${isAdmin ? '<button type="button" class="btn sm danger" data-wipe>Xoá toàn bộ…</button>' : ''}
@@ -7654,12 +7617,10 @@ __M["js/app.js"] = (() => {
 // Điều hướng, khung ứng dụng, tìm kiếm toàn hệ thống, thêm nhanh, thông báo.
 const store = __M["js/store.js"];
 const { all, find, settings, groupName } = __M["js/store.js"];
-const { today, esc, norm, fmtDate, fmtDur, searchMatch } = __M["js/util.js"];
+const { today, esc, norm, fmtDate, searchMatch } = __M["js/util.js"];
 const { blank } = __M["js/schema.js"];
-const { openForm, openModal, toast, confirmDialog } = __M["js/ui.js"];
-const timer = __M["js/timer.js"];
+const { openForm, openModal, toast } = __M["js/ui.js"];
 const { currentAlerts, sendDailyDigest, requestPermission } = __M["js/notify.js"];
-const { isRunning } = __M["js/timer.js"];
 const { initCloud, cloudState, cloudStatusText, cloudLabel, subscribeCloud } = __M["js/cloud.js"];
 const projects = __M["js/projects.js"];
 
@@ -7694,7 +7655,7 @@ const MENU_ICON = '<path d="M4 7h16M4 12h16M4 17h16"/>';
 const SUBTITLES = {
   dashboard: 'Bức tranh công việc hôm nay',
   tasks: 'Kế hoạch tháng, tuần và tiến độ',
-  content: 'Từ ý tưởng đến lúc đăng bài',
+  content: 'Việc thực thi và sản phẩm content',
   calendar: 'Lịch làm việc và các mốc quan trọng',
   ideas: 'Nơi lưu giữ và tái sử dụng ý tưởng',
   events: 'Sự kiện, lịch quay và việc hỗ trợ',
@@ -7808,7 +7769,6 @@ function renderRoute(preserveScroll = false) {
   $('#bottom-menu')?.classList.toggle('active', !MOBILE_ROUTES.includes(route));
   updateCounts();
   renderBell();
-  renderTimer();
   if (preserveScroll && prevRoute === route) window.scrollTo(0, y);
   else if (prevRoute !== route) window.scrollTo(0, 0);
 }
@@ -7820,28 +7780,6 @@ function scheduleRender() {
     renderQueued = false;
     renderRoute(true);
   });
-}
-
-// ---------- bộ đếm thời gian ----------
-function renderTimer() {
-  const el = $('#timer-widget');
-  if (!el) return;
-  const t = timer.activeTimer();
-  if (!t) {
-    el.innerHTML = '<div class="timer-idle">Chưa chạy bộ đếm thời gian</div>';
-    return;
-  }
-  const task = find('tasks', t.taskId);
-  const running = isRunning(t);
-  el.innerHTML = `<div class="timer-widget">
-    <div class="small muted">${running ? '<span class="timer-live">Đang tính giờ</span>' : 'Tạm dừng'}</div>
-    <div class="timer-time">${timer.clockLabel(t)}</div>
-    <div class="small" title="${esc(task?.title || '')}">${esc((task?.title || 'Công việc đã xoá').slice(0, 40))}</div>
-    <div class="row" style="margin-top:7px">
-      <button class="btn sm" data-timer-toggle>${running ? 'Tạm dừng' : 'Tiếp tục'}</button>
-      <button class="btn sm primary" data-timer-stop>Kết thúc</button>
-    </div>
-  </div>`;
 }
 
 // ---------- thông báo ----------
@@ -7877,7 +7815,7 @@ function openAlert(a) {
 // ---------- tìm kiếm ----------
 const searchIndex = () => {
   const out = [];
-  for (const p of all('projects')) out.push({ type: 'project', label: 'Công việc lớn', rec: p, hay: [p.title, p.description, p.notes].join(' ') });
+  for (const p of all('projects')) out.push({ type: 'project', label: 'Đầu mục', rec: p, hay: [p.title, p.description, p.notes].join(' ') });
   for (const t of all('tasks')) out.push({ type: 'task', label: 'Công việc', rec: t, hay: [t.title, t.description, t.project, find('projects', t.projectId)?.title || '', ...(t.tags || [])].join(' ') });
   for (const c of all('contents')) out.push({ type: 'content', label: 'Nội dung', rec: c, hay: [c.title, c.code, c.topic, c.hook, c.insight, c.product, c.brand, c.script].join(' ') });
   for (const i of all('ideas')) out.push({ type: 'idea', label: 'Ý tưởng', rec: i, hay: [i.title, i.topic, i.description, i.hook, i.insight, ...(i.tags || [])].join(' ') });
@@ -8065,27 +8003,6 @@ function bindShell() {
     }
   });
 
-  $('#timer-widget').addEventListener('click', async e => {
-    const t = timer.activeTimer();
-    if (!t) return;
-    if (e.target.closest('[data-timer-toggle]')) {
-      if (isRunning(t)) await timer.pause(); else await timer.resume();
-      renderTimer();
-    }
-    if (e.target.closest('[data-timer-stop]')) {
-      const task = find('tasks', t.taskId);
-      const ok = await confirmDialog({
-        title: 'Kết thúc bộ đếm',
-        message: `Ghi nhận ${timer.clockLabel(t)} cho "${task?.title || 'công việc'}"?`,
-        okLabel: 'Kết thúc và lưu',
-      });
-      if (!ok) return;
-      const r = await timer.stop();
-      if (r) toast(`Đã ghi nhận ${fmtDur(r.minutes)}.`, 'success');
-      renderTimer();
-    }
-  });
-
   window.addEventListener('hashchange', () => {
     if (parseHash().route !== currentRoute) {
       $('#sidebar').classList.remove('open');
@@ -8120,18 +8037,15 @@ async function boot() {
   } catch { /* trình duyệt chặn localStorage */ }
   if (!location.hash) location.hash = '#/dashboard';
 
-  // Chuyển dự án cũ + đồng bộ tiến độ công việc lớn trước lần vẽ đầu tiên.
+  // Chuyển dự án cũ + đồng bộ tiến độ đầu mục trước lần vẽ đầu tiên.
   try { await projects.init(); } catch (e) { console.warn('projects:', e); }
 
   store.subscribe((type) => {
     updateCounts();
-    if (type === 'timer') renderTimer();
     scheduleRender();
   });
 
   renderRoute(false);
-  renderTimer();
-  setInterval(renderTimer, 1000);
 
   // Thông báo nền chỉ khi đã có quyền; không tự xin quyền khi mở app.
   setTimeout(() => {
